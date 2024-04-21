@@ -1,0 +1,20 @@
+name: Pipeline
+
+on: [push]
+
+jobs:
+    commits:
+        name: Commits
+        uses: ./.github/workflows/conventional-commits.yml
+    coding-style:
+        name: Coding Style
+        uses: ./.github/workflows/coding-style.yml
+    tests:
+        name: Compile
+        uses: ./.github/workflows/unit-tests.yml
+    mirror:
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        needs: [commits, coding-style, tests]
+        uses: ./.github/workflows/mirror.yml
+        secrets:
+            KEY: ${{ secrets.KEY }}

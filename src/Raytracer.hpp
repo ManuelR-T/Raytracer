@@ -65,12 +65,12 @@ class Sphere : public IShape {
 public:
     Math::Point3D Center;
     double Radius;
-    Math::RGBA Color;
+    Material jame;
 
-    Sphere(const Math::Point3D &center, double radius, const Math::RGBA &color)
+    Sphere(const Math::Point3D &center, double radius, const Material &color)
         : Center(center)
         , Radius(radius)
-        , Color(color)
+        , jame(color)
     {
     }
 
@@ -94,7 +94,7 @@ public:
             if (t < 0)
                 return false;
 
-            hitColor = Color;
+            hitColor = jame.color;
             return true;
         }
     }

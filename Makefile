@@ -14,7 +14,7 @@ SRC =	 $(addsuffix .cpp, 				\
 			)	\
 		)
 
-OBJ = $(SRC:.c=.o)
+OBJ = $(SRC:.cpp=.o)
 
 NAME = raytracer
 
@@ -27,7 +27,7 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	$(CXX) -o $(NAME) $(OBJ) $(CFLAGS) $(CPPFLAGS)
 
-%.o: %.c
+%.o: %.cpp
 	$(CXX) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
 debug: CFLAGS += -g3 -DDEBUG

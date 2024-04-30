@@ -18,27 +18,6 @@
 
 namespace RayTracer {
 
-class Rectangle3D {
-public:
-    Math::Point3D Origin;
-    Math::Vector3D BottomSide;
-    Math::Vector3D LeftSide;
-
-    Rectangle3D(const Math::Point3D &origin,
-                const Math::Vector3D &bottomSide,
-                const Math::Vector3D &leftSide)
-        : Origin(origin)
-        , BottomSide(bottomSide)
-        , LeftSide(leftSide)
-    {
-    }
-
-    Math::Point3D pointAt(double u, double v) const
-    {
-        return Origin + BottomSide * u + LeftSide * v;
-    }
-};
-
 class Scene {
 public:
     std::vector<std::unique_ptr<IObject>> shapes;

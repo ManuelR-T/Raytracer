@@ -5,8 +5,11 @@
 ## Makefile
 ##
 
-SRC =	 $(addsuffix .c, 				\
+SRC =	 $(addsuffix .cpp, 				\
 			$(addprefix src/, 			\
+				$(addprefix RayTracer/,	\
+					Camera				\
+				)	\
 				main					\
 			)	\
 		)

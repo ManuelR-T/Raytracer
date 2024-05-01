@@ -3,3 +3,4 @@ raytracer
 *.o
 .cache/
 *.log
+*.ppm

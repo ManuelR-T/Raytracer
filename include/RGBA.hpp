@@ -10,62 +10,70 @@
 #include <algorithm>
 #include <iostream>
 
+#pragma once
+
+#include <algorithm>
+#include <iostream>
+
 namespace Math {
 class RGBA {
 public:
-    unsigned int R, G, B, A;
+    unsigned char R, G, B, A;
 
-    RGBA(unsigned int r = 255,
-         unsigned int g = 255,
-         unsigned int b = 255,
-         unsigned int a = 255)
-        : R(r)
-        , G(g)
-        , B(b)
-        , A(a)
+    RGBA(unsigned char r = 255,
+         unsigned char g = 255,
+         unsigned char b = 255,
+         unsigned char a = 255)
+        : R(r), G(g), B(b), A(a)
     {
     }
 
-    RGBA operator*(double scalar) const
-    {
-        return RGBA(R * scalar, G * scalar, B * scalar, A * scalar);
+    RGBA operator*(double scalar) const {
+        return RGBA(
+            static_cast<unsigned char>(std::clamp(static_cast<int>(R * scalar), 0, 255)),
+            static_cast<unsigned char>(std::clamp(static_cast<int>(G * scalar), 0, 255)),
+            static_cast<unsigned char>(std::clamp(static_cast<int>(B * scalar), 0, 255)),
+            A  // Assuming alpha doesn't change with scalar multiplication
+        );
     }
 
-    RGBA operator*(const RGBA &other) const
-    {
-        return RGBA(R * other.R, G * other.G, B * other.B, A * other.A);
+    RGBA operator*(const RGBA &other) const {
+        return RGBA(
+            static_cast<unsigned char>(std::min(R, other.R)),
+            static_cast<unsigned char>(std::min(G, other.G)),
+            static_cast<unsigned char>(std::min(B, other.B)),
+            static_cast<unsigned char>(std::min(A, other.A))
+        );
     }
 
-    RGBA operator+(const RGBA &other) const
-    {
-        return RGBA(R + other.R, G + other.G, B + other.B, A + other.A);
+    RGBA operator+(const RGBA &other) const {
+        return RGBA(
+            static_cast<unsigned char>(std::min(R + other.R, 255)),
+            static_cast<unsigned char>(std::min(G + other.G, 255)),
+            static_cast<unsigned char>(std::min(B + other.B, 255)),
+            static_cast<unsigned char>(std::min(A + other.A, 255))
+        );
     }
 
-    RGBA operator-(const RGBA &other) const
-    {
-        return RGBA(R - other.R, G - other.G, B - other.B, A - other.A);
-    }
-
-    RGBA &operator+=(const RGBA &other)
-    {
-        R += other.R;
-        G += other.G;
-        B += other.B;
-        A += other.A;
+    RGBA &operator+=(const RGBA &other) {
+        R = static_cast<unsigned char>(std::min(R + other.R, 255));
+        G = static_cast<unsigned char>(std::min(G + other.G, 255));
+        B = static_cast<unsigned char>(std::min(B + other.B, 255));
+        A = static_cast<unsigned char>(std::min(A + other.A, 255));
         return *this;
     }
 
-    void clamp()
-    {
-        R = std::clamp<unsigned char>(R, 0, 255);
-        G = std::clamp<unsigned char>(G, 0, 255);
-        B = std::clamp<unsigned char>(B, 0, 255);
-        A = std::clamp<unsigned char>(A, 0, 255);
+    RGBA clamp() {
+        R = std::clamp(R, static_cast<unsigned char>(0), static_cast<unsigned char>(255));
+        G = std::clamp(G, static_cast<unsigned char>(0), static_cast<unsigned char>(255));
+        B = std::clamp(B, static_cast<unsigned char>(0), static_cast<unsigned char>(255));
+        A = std::clamp(A, static_cast<unsigned char>(0), static_cast<unsigned char>(255));
+        return *this;
     }
 
-    void write_color(std::ostream &out) const
-    {
-        out << R << ' ' << G << ' ' << B << '\n';
+    void write_color(std::ostream &out) const {
+        out << static_cast<int>(R) << ' ' << static_cast<int>(G) << ' ' << static_cast<int>(B) << '\n';
     }
 };
 } // namespace Math
+

@@ -47,5 +47,10 @@ public:
     {
         return Normal;
     }
+
+    virtual Material getMaterial() const override
+    {
+        return Jame;
+    }
 };
 } // namespace RayTracer

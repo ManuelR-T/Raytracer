@@ -12,8 +12,8 @@
 namespace RayTracer {
 class Flat : public Material {
 public:
-    Flat(const Math::RGBA &color, double refractionIndex = 1.0)
-        : Material(color, refractionIndex)
+    Flat(const Math::RGBA &color, double refractionIndex = 1.0, double shininess = 10)
+        : Material(color, refractionIndex, shininess)
     {
     }
 };

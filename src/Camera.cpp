@@ -42,23 +42,31 @@ Math::RGBA Camera::traceRay(const Ray &ray, const Scene &scene) const
     }
 
     if (closestShapeIt != scene.shapes.end()) {
+
         Math::RGBA finalColor = Math::RGBA{0, 0, 0, 1};
+        Vector3D viewDir = (ray.m_direction * -1).normalized(); // Corrected for clarity
         for (const auto &light : scene.lights) {
-            Vector3D lightDir =
-                light->getDirectionToPoint(hitPoint).normalized();
+            Vector3D lightDir = light->getDirectionToPoint(hitPoint).normalized();
             Math::RGBA lightColor = light->getIntensityAt(hitPoint);
             Vector3D normal = (*closestShapeIt)->getNormal(hitPoint);
-            double dot = lightDir.dot(normal);
+            double dot = std::max(lightDir.dot(normal), 0.0);
 
+            // Diffuse light
             if (dot > 0) {
                 finalColor.R += closestColor.R * lightColor.R * dot / 255.0;
                 finalColor.G += closestColor.G * lightColor.G * dot / 255.0;
                 finalColor.B += closestColor.B * lightColor.B * dot / 255.0;
             }
+
+            // Specular light
+            Vector3D reflectDir = (2 * dot * normal - lightDir).normalized();
+            double spec = std::pow(std::max(viewDir.dot(reflectDir), 0.0), (*closestShapeIt)->getMaterial().shininess);
+            finalColor += lightColor * spec;
         }
         return finalColor;
     }
     return closestColor;
 }
+
 
 } // namespace RayTracer

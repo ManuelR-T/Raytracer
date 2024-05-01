@@ -47,14 +47,29 @@ namespace Math
 
         double length() const
         {
-            if (COL != 1) {
-                throw std::runtime_error("Incorrect shape for the matrix.\n");
-            }
             double sum = 0.f;
             for (size_t row = 0; row < ROW; row++) {
                 sum += this->operator()(row, 0) * this->operator()(row, 0);
             }
             return sqrt(sum);
+        }
+
+        void normalize()
+        {
+            double len = length();
+
+            if (!len)
+                return;
+            this->operator/=(len);
+        }
+
+        Math::Matrix<ROW, COL> normalized() const
+        {
+            double len = length();
+
+            if (!len)
+                return *this;
+            return this->operator/(len);
         }
 
         /// @brief Dot product between 2 Vectors of N rows.
@@ -77,17 +92,24 @@ namespace Math
             return res;
         }
 
+        /// @brief This function is used for Matrix Multiplication and can be used by vectors as well
+        ///        as long as they respect the correct shapes.
+        /// @tparam NEW_COL Number of columns of the Matrix passed as parameter.
+        /// @param mat Matrix parameter used for computation.
+        /// @return New matrix that is the result of the matrix multiplication.
         template <size_t NEW_COL>
         Matrix<ROW, NEW_COL> matMul(const Matrix<COL, NEW_COL> &mat)
         {
             Matrix<ROW, NEW_COL> newMat;
 
-            // for (size_t i = 0; i < ROW, i++) {
-            //     for (size_t i = 0; i < ROW, i++) {
-            //         for (size_t i = 0; i < ROW, i++) {
-            //         }    
-            //     }
-            // }
+            for (size_t i = 0; i < ROW; i++) {
+                for (size_t j = 0; j < COL; j++) {
+                    for (size_t k = 0; k < NEW_COL; k++) {
+                        newMat(i, k) += this->operator()(i, j) * mat.operator()(j, k);
+                    }
+                }
+            }
+            return newMat;
         }
 
         Matrix<ROW, COL> &operator=(const Matrix<ROW, COL> &oth)
@@ -110,10 +132,15 @@ namespace Math
         Matrix<ROW, COL> &operator*=(const Matrix<ROW, COL> &oth) { return do_opThis(oth, std::multiplies<double>()); }
         Matrix<ROW, COL> &operator/=(const Matrix<ROW, COL> &oth) { return do_opThis(oth, std::divides<double>()); }
 
-        Matrix<ROW, COL> operator+(double val) { return do_opCreateValue(val, [val] (auto elem) -> double { return elem + val; }); }
-        Matrix<ROW, COL> operator-(double val) { return do_opCreateValue(val, [val] (auto elem) -> double { return elem - val; }); }
-        Matrix<ROW, COL> operator*(double val) { return do_opCreateValue(val, [val] (auto elem) -> double { return elem * val; }); }
-        Matrix<ROW, COL> operator/(double val) { return do_opCreateValue(val, [val] (auto elem) -> double { return elem / val; }); }
+        Matrix<ROW, COL> operator+(double val) const { return do_opCreateValue(val, [val] (auto elem) -> double { return elem + val; }); }
+        Matrix<ROW, COL> operator-(double val) const { return do_opCreateValue(val, [val] (auto elem) -> double { return elem - val; }); }
+        Matrix<ROW, COL> operator*(double val) const { return do_opCreateValue(val, [val] (auto elem) -> double { return elem * val; }); }
+        Matrix<ROW, COL> operator/(double val) const { return do_opCreateValue(val, [val] (auto elem) -> double { return elem / val; }); }
+
+        Matrix<ROW, COL> &operator+=(double val) { return do_opThisValue(val, [val] (auto elem) -> double { return elem + val; }); }
+        Matrix<ROW, COL> &operator-=(double val) { return do_opThisValue(val, [val] (auto elem) -> double { return elem - val; }); }
+        Matrix<ROW, COL> &operator*=(double val) { return do_opThisValue(val, [val] (auto elem) -> double { return elem * val; }); }
+        Matrix<ROW, COL> &operator/=(double val) { return do_opThisValue(val, [val] (auto elem) -> double { return elem / val; }); }
 
 
         inline double operator()(size_t i, size_t j) const
@@ -124,9 +151,19 @@ namespace Math
             return this->m_data[i * COL + j];
         }
 
+        inline double &operator()(size_t i, size_t j)
+        {
+            if (i >= ROW || j >= COL) {
+                throw std::runtime_error("Out of bound.\n");
+            }
+            return this->m_data[i * COL + j];
+        }
+
     private:
+        // Do op functions are used to factorize code.
+
         template <typename F>
-        Matrix<ROW, COL> do_opCreateValue(double value, F func)
+        Matrix<ROW, COL> do_opCreateValue(double value, F func) const
         {
             Matrix<ROW, COL> mat(*this);
 
@@ -141,6 +178,13 @@ namespace Math
 
             do_op(mat, oth, func);
             return mat;
+        }
+
+        template <typename F>
+        Matrix<ROW, COL> &do_opThisValue(double value, F func)
+        {
+            std::transform(this->m_data.begin(), this->m_data.end(), this->m_data.begin(), func);
+            return *this;
         }
 
         template <typename F>

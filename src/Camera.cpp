@@ -12,6 +12,7 @@
 #include "Shapes/IShape.hpp"
 
 #include <memory>
+#include <tuple>
 
 namespace RayTracer {
 Camera::Camera(const Point3D &origin) : origin(origin)
@@ -23,7 +24,37 @@ Ray Camera::ray(double u, double v) const
     return Ray(origin, Vector3D{u - 0.5, v - 0.5, -1}.normalized());
 }
 
-Math::RGBA Camera::traceRay(const Ray &ray, const Scene &scene) const
+static void applyDiffuseLight(Math::RGBA &loopColor,
+                              const Math::RGBA &closestColor,
+                              const Math::RGBA &lightColor,
+                              double dot)
+{
+    loopColor.R = closestColor.R * lightColor.R * dot / 255.0;
+    loopColor.G = closestColor.G * lightColor.G * dot / 255.0;
+    loopColor.B = closestColor.B * lightColor.B * dot / 255.0;
+}
+
+static void applySpecularLight(
+    Math::RGBA &loopColor,
+    const Math::RGBA &closestColor,
+    const Math::RGBA &lightColor,
+    double dot,
+    const Vector3D &viewDir,
+    const Vector3D &lightDir,
+    const Vector3D &normal,
+    const std::vector<std::unique_ptr<IShape>>::const_iterator &closestShapeIt)
+{
+    Vector3D reflectDir = (2 * dot * normal - lightDir).normalized();
+    double spec = std::pow(std::max(viewDir.dot(reflectDir), .0),
+                           (*closestShapeIt)->getMaterial().shininess);
+    loopColor += lightColor * spec;
+}
+
+static std::tuple<double,
+                  Math::RGBA,
+                  Point3D,
+                  std::vector<std::unique_ptr<IShape>>::const_iterator>
+getClosestShapeInfo(const Ray &ray, const Scene &scene)
 {
     double minDist = std::numeric_limits<double>::infinity();
     Math::RGBA closestColor = Math::RGBA{0, 0, 0, 0};
@@ -40,34 +71,53 @@ Math::RGBA Camera::traceRay(const Ray &ray, const Scene &scene) const
             hitPoint = ray.m_origin + ray.m_direction * dist;
         }
     }
+    return std::make_tuple(minDist, closestColor, hitPoint, closestShapeIt);
+}
+
+static void applyLight(
+    const Scene &scene,
+    const std::vector<std::unique_ptr<IShape>>::const_iterator &closestShapeIt,
+    const Math::RGBA &closestColor,
+    const Point3D &hitPoint,
+    Math::RGBA &finalColor,
+    const Vector3D &viewDir)
+{
+    for (const auto &light : scene.lights) {
+        Math::RGBA loopColor = Math::RGBA{0, 0, 0, 1};
+        Vector3D lightDir = light->getDirectionToPoint(hitPoint).normalized();
+        Math::RGBA lightColor = light->getIntensityAt(hitPoint);
+        Vector3D normal = (*closestShapeIt)->getNormal(hitPoint);
+        double dot = std::max(lightDir.dot(normal), 0.0);
+
+        if (dot > 0)
+            applyDiffuseLight(loopColor, closestColor, lightColor, dot);
+        applySpecularLight(loopColor,
+                           closestColor,
+                           lightColor,
+                           dot,
+                           viewDir,
+                           lightDir,
+                           normal,
+                           closestShapeIt);
+        finalColor += loopColor;
+    }
+}
+
+Math::RGBA Camera::traceRay(const Ray &ray, const Scene &scene) const
+{
+    double minDist;
+    Math::RGBA closestColor;
+    Point3D hitPoint;
+    std::vector<std::unique_ptr<IShape>>::const_iterator closestShapeIt;
+
+    std::tie(minDist, closestColor, hitPoint, closestShapeIt) =
+        getClosestShapeInfo(ray, scene);
 
     if (closestShapeIt != scene.shapes.end()) {
-
         Math::RGBA finalColor = scene.ambientLight * closestColor;
-        Vector3D viewDir = (ray.m_direction * -1).normalized();
-        for (const auto &light : scene.lights) {
-            Math::RGBA loopColor = Math::RGBA{0, 0, 0, 1};
-            Vector3D lightDir = light->getDirectionToPoint(hitPoint).normalized();
-            Math::RGBA lightColor = light->getIntensityAt(hitPoint);
-            Vector3D normal = (*closestShapeIt)->getNormal(hitPoint);
-            double dot = std::max(lightDir.dot(normal), 0.0);
 
-            // Diffuse light
-            if (dot > 0) {
-                loopColor.R = closestColor.R * lightColor.R * dot / 255.0;
-                loopColor.G = closestColor.G * lightColor.G * dot / 255.0;
-                loopColor.B = closestColor.B * lightColor.B * dot / 255.0;
-            }
-
-            // Specular light
-            Vector3D reflectDir = (2 * dot * normal - lightDir).normalized();
-            double spec = std::pow(std::max(viewDir.dot(reflectDir), .0), (*closestShapeIt)->getMaterial().shininess);
-            loopColor += lightColor * spec;
-
-
-            finalColor += loopColor;
-
-        }
+        applyLight(scene, closestShapeIt, closestColor, hitPoint,
+            finalColor, (ray.m_direction * -1).normalized());
         return finalColor.clamp();
     }
     return closestColor;

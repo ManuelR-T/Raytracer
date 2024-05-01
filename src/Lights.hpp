@@ -17,7 +17,7 @@ public:
     virtual ~ILight() {}
 
     virtual Math::RGBA getIntensityAt(const Point3D& point) const = 0;
-    virtual Vector3D getDirectionFromLightToPoint(const Point3D& point) const = 0;
+    virtual Vector3D getDirectionToPoint(const Point3D& point) const = 0;
 };
 
 class DirectionalLight : public ILight {
@@ -32,7 +32,7 @@ public:
         return intensity;
     }
 
-    virtual Vector3D getDirectionFromLightToPoint(const Point3D& point) const override {
+    virtual Vector3D getDirectionToPoint(const Point3D& point) const override {
         return direction * -1;
     }
 };
@@ -49,7 +49,7 @@ public:
         return intensity;
     }
 
-    virtual Vector3D getDirectionFromLightToPoint(const Point3D& point) const override {
+    virtual Vector3D getDirectionToPoint(const Point3D& point) const override {
         return position.getVectorTo(point).normalized();
     }
 };

@@ -75,7 +75,7 @@ namespace Math
         /// @brief Dot product between 2 Vectors of N rows.
         ///        The current Matrix and the one passed as argument
         ///        MUST be vectors of same dimensions.
-        double dot(const Matrix<ROW, 1> &vect)
+        double dot(const Matrix<ROW, 1> &vect) const
         {
             if (COL != 1) {
                 throw std::runtime_error("Matrix must only have 1 Column.\n");
@@ -125,6 +125,7 @@ namespace Math
         Matrix<ROW, COL> &operator=(const Matrix<ROW, COL> &oth)
         {
             this->m_data = oth.m_data;
+            return *this;
         }
 
         Matrix<ROW, COL> &operator=(Matrix<ROW, COL> &&oth)
@@ -132,10 +133,10 @@ namespace Math
             this->m_data = oth.m_data;
         }
 
-        Matrix<ROW, COL> operator+(const Matrix<ROW, COL> &oth) { return do_opCreate(oth, std::plus<double>()); }
-        Matrix<ROW, COL> operator-(const Matrix<ROW, COL> &oth) { return do_opCreate(oth, std::minus<double>()); }
-        Matrix<ROW, COL> operator*(const Matrix<ROW, COL> &oth) { return do_opCreate(oth, std::multiplies<double>()); }
-        Matrix<ROW, COL> operator/(const Matrix<ROW, COL> &oth) { return do_opCreate(oth, std::divides<double>()); }
+        Matrix<ROW, COL> operator+(const Matrix<ROW, COL> &oth) const { return do_opCreate(oth, std::plus<double>()); }
+        Matrix<ROW, COL> operator-(const Matrix<ROW, COL> &oth) const { return do_opCreate(oth, std::minus<double>()); }
+        Matrix<ROW, COL> operator*(const Matrix<ROW, COL> &oth) const { return do_opCreate(oth, std::multiplies<double>()); }
+        Matrix<ROW, COL> operator/(const Matrix<ROW, COL> &oth) const { return do_opCreate(oth, std::divides<double>()); }
 
         Matrix<ROW, COL> &operator+=(const Matrix<ROW, COL> &oth) { return do_opThis(oth, std::plus<double>()); }
         Matrix<ROW, COL> &operator-=(const Matrix<ROW, COL> &oth) { return do_opThis(oth, std::minus<double>()); }
@@ -182,7 +183,7 @@ namespace Math
         }
 
         template <typename F>
-        Matrix<ROW, COL> do_opCreate(const Matrix<ROW, COL> &oth, F func)
+        Matrix<ROW, COL> do_opCreate(const Matrix<ROW, COL> &oth, F func) const
         {
             Matrix<ROW, COL> mat;
 
@@ -205,7 +206,7 @@ namespace Math
         }
 
         template <typename F>
-        void do_op(Matrix<ROW, COL> &mat, const Matrix<ROW, COL> &oth, F func)
+        void do_op(Matrix<ROW, COL> &mat, const Matrix<ROW, COL> &oth, F func) const
         {
             auto it_mat = this->m_data.begin();
             auto it_oth = oth.m_data.begin();

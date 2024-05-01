@@ -9,6 +9,7 @@
 
 #include "Camera.hpp"
 #include "Lights.hpp"
+#include "Raytracer.hpp"
 #include "Shapes/IShape.hpp"
 
 #include <memory>
@@ -22,6 +23,7 @@ public:
     std::vector<std::unique_ptr<ILight>> lights;
     std::unique_ptr<Camera> camera;
     int width, height;
+    Math::RGBA ambientLight{1, 1, 1};
 
     Scene(int w, int h);
     Scene(const Scene &) = delete;

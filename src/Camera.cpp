@@ -43,9 +43,10 @@ Math::RGBA Camera::traceRay(const Ray &ray, const Scene &scene) const
 
     if (closestShapeIt != scene.shapes.end()) {
 
-        Math::RGBA finalColor = Math::RGBA{0, 0, 0, 1};
-        Vector3D viewDir = (ray.m_direction * -1).normalized(); // Corrected for clarity
+        Math::RGBA finalColor = scene.ambientLight * closestColor;
+        Vector3D viewDir = (ray.m_direction * -1).normalized();
         for (const auto &light : scene.lights) {
+            Math::RGBA loopColor = Math::RGBA{0, 0, 0, 1};
             Vector3D lightDir = light->getDirectionToPoint(hitPoint).normalized();
             Math::RGBA lightColor = light->getIntensityAt(hitPoint);
             Vector3D normal = (*closestShapeIt)->getNormal(hitPoint);
@@ -53,20 +54,22 @@ Math::RGBA Camera::traceRay(const Ray &ray, const Scene &scene) const
 
             // Diffuse light
             if (dot > 0) {
-                finalColor.R += closestColor.R * lightColor.R * dot / 255.0;
-                finalColor.G += closestColor.G * lightColor.G * dot / 255.0;
-                finalColor.B += closestColor.B * lightColor.B * dot / 255.0;
+                loopColor.R = closestColor.R * lightColor.R * dot / 255.0;
+                loopColor.G = closestColor.G * lightColor.G * dot / 255.0;
+                loopColor.B = closestColor.B * lightColor.B * dot / 255.0;
             }
 
             // Specular light
             Vector3D reflectDir = (2 * dot * normal - lightDir).normalized();
-            double spec = std::pow(std::max(viewDir.dot(reflectDir), 0.0), (*closestShapeIt)->getMaterial().shininess);
-            finalColor += lightColor * spec;
+            double spec = std::pow(std::max(viewDir.dot(reflectDir), .0), (*closestShapeIt)->getMaterial().shininess);
+            loopColor += lightColor * spec;
+
+
+            finalColor += loopColor;
+
         }
-        return finalColor;
+        return finalColor.clamp();
     }
     return closestColor;
 }
-
-
 } // namespace RayTracer

@@ -54,5 +54,10 @@ public:
     {
         return point.getVectorTo(Center).normalized();
     }
+
+    virtual Material getMaterial() const override
+    {
+        return jame;
+    }
 };
 } // namespace RayTracer

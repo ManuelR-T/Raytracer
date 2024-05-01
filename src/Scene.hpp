@@ -8,47 +8,29 @@
 #pragma once
 
 #include "Camera.hpp"
+#include "Lights.hpp"
+#include "Shapes/IShape.hpp"
 
 #include <memory>
 #include <vector>
 
 namespace RayTracer {
+class Camera;
 class Scene {
 public:
     std::vector<std::unique_ptr<IShape>> shapes;
-    Camera camera;
+    std::vector<std::unique_ptr<ILight>> lights;
+    std::unique_ptr<Camera> camera;
     int width, height;
 
-    Scene(int w, int h) : width(w), height(h)
-    {
-    }
-
+    Scene(int w, int h);
     Scene(const Scene &) = delete;
     Scene &operator=(const Scene &) = delete;
 
-    void addShape(std::unique_ptr<IShape> shape)
-    {
-        shapes.push_back(std::move(shape));
-    }
+    void addShape(std::unique_ptr<IShape> shape);
+    void addLight(std::unique_ptr<ILight> light);
+    void setCamera(const RayTracer::Camera &cam);
 
-    void setCamera(const Camera &cam)
-    {
-        camera = cam;
-    }
-
-    void generateImage(std::ostream &out) const
-    {
-        out << "P3\n" << width << ' ' << height << "\n255\n";
-
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                double u = double(x) / (width - 1);
-                double v = double(y) / (height - 1);
-                Ray r = camera.ray(u, v);
-                Math::RGBA color = camera.traceRay(r, shapes);
-                color.write_color(out);
-            }
-        }
-    }
+    void generateImage(std::ostream &out) const;
 };
 } // namespace RayTracer

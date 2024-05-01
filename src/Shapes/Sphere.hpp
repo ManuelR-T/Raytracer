@@ -49,5 +49,10 @@ public:
             return true;
         }
     }
+
+    virtual Vector3D getNormal(const Point3D &point) const override
+    {
+        return point.getVectorTo(Center).normalized();
+    }
 };
 } // namespace RayTracer

@@ -26,6 +26,35 @@ public:
     {
     }
 
+    RGBA operator*(double scalar) const
+    {
+        return RGBA(R * scalar, G * scalar, B * scalar, A * scalar);
+    }
+
+    RGBA operator*(const RGBA &other) const
+    {
+        return RGBA(R * other.R, G * other.G, B * other.B, A * other.A);
+    }
+
+    RGBA operator+(const RGBA &other) const
+    {
+        return RGBA(R + other.R, G + other.G, B + other.B, A + other.A);
+    }
+
+    RGBA operator-(const RGBA &other) const
+    {
+        return RGBA(R - other.R, G - other.G, B - other.B, A - other.A);
+    }
+
+    RGBA &operator+=(const RGBA &other)
+    {
+        R += other.R;
+        G += other.G;
+        B += other.B;
+        A += other.A;
+        return *this;
+    }
+
     void clamp()
     {
         R = std::clamp<unsigned char>(R, 0, 255);

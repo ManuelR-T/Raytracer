@@ -339,5 +339,5 @@ Math::Matrix<ROW, COL> operator*(const Math::Matrix<ROW, COL>& mat, double scala
 
 template <size_t ROW, size_t COL>
 Math::Matrix<ROW, COL> operator*(double scalar, const Math::Matrix<ROW, COL>& mat) {
-    return mat * scalar;  // Utilize the first operator to maintain DRY
+    return mat * scalar;
 }

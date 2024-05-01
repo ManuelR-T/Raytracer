@@ -38,22 +38,22 @@ public:
     }
 
     RGBA operator*(const RGBA &other) const {
-        return RGBA(
-            static_cast<unsigned char>(std::min(R, other.R)),
-            static_cast<unsigned char>(std::min(G, other.G)),
-            static_cast<unsigned char>(std::min(B, other.B)),
-            static_cast<unsigned char>(std::min(A, other.A))
-        );
-    }
+    return RGBA(
+        std::min((R * other.R) / 255, 255),
+        std::min((G * other.G) / 255, 255),
+        std::min((B * other.B) / 255, 255),
+        A
+    );
+}
 
     RGBA operator+(const RGBA &other) const {
-        return RGBA(
-            static_cast<unsigned char>(std::min(R + other.R, 255)),
-            static_cast<unsigned char>(std::min(G + other.G, 255)),
-            static_cast<unsigned char>(std::min(B + other.B, 255)),
-            static_cast<unsigned char>(std::min(A + other.A, 255))
-        );
-    }
+    return RGBA(
+        std::min(R + other.R, 255),
+        std::min(G + other.G, 255),
+        std::min(B + other.B, 255),
+        std::min(A + other.A, 255)
+    );
+}
 
     RGBA &operator+=(const RGBA &other) {
         R = static_cast<unsigned char>(std::min(R + other.R, 255));

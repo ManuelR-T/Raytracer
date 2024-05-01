@@ -12,7 +12,7 @@
 namespace RayTracer {
 class Material {
 public:
-    Material(const Math::RGBA &color, double refractionIndex = 1.0, double shininess = 1.0)
+    Material(const Math::RGBA &color, double refractionIndex = 1.0, double shininess = 1000.0)
         : color(color)
         , refractionIndex(refractionIndex)
         , shininess(shininess)

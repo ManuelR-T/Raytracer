@@ -133,6 +133,7 @@ public:
     Matrix<ROW, COL> &operator=(Matrix<ROW, COL> &&oth)
     {
         this->m_data = oth.m_data;
+        return *this;
     }
 
     Matrix<ROW, COL> operator+(const Matrix<ROW, COL> &oth) const

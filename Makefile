@@ -7,6 +7,8 @@
 
 SRC =	 $(addsuffix .c, 				\
 			$(addprefix src/, 			\
+				Scene					\
+				Camera					\
 				main					\
 			)	\
 		)

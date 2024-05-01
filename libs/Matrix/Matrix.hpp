@@ -112,6 +112,16 @@ namespace Math
             return newMat;
         }
 
+        Matrix<ROW, COL> getVectorTo(const Matrix<ROW, COL> &vect) const
+        {
+            return vect - *this;
+        }
+
+        Matrix<ROW, COL> getVectorFrom(const Matrix<ROW, COL> &vect) const
+        {
+            return *this - vect;
+        }
+
         Matrix<ROW, COL> &operator=(const Matrix<ROW, COL> &oth)
         {
             this->m_data = oth.m_data;
@@ -209,6 +219,7 @@ namespace Math
             }
         }
 
+        /// @brief Raw data of the matrix.
         std::array<double, ROW * COL> m_data;
     };
 }
@@ -235,5 +246,8 @@ std::ostream &operator<<(std::ostream &s, const Math::Matrix<ROW, COL> &oth)
     return s;
 }
 
-/// @brief Alias of Matrix<3, 1> for 3D Vectors
+/// @brief Alias of Matrix<3, 1> for 3D Vectors.
 typedef Math::Matrix<3, 1> Vector3D;
+
+/// @brief Alias of Matrix<3, 1> for 3D Points.
+typedef Math::Matrix<3, 1> Point3D;

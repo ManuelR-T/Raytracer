@@ -171,50 +171,50 @@ public:
 
     Matrix<ROW, COL> operator+(double val) const
     {
-        return do_opCreateValue(val, [val](auto elem) -> double {
+        return do_opCreateValue([val](auto elem) -> double {
             return elem + val;
         });
     }
     Matrix<ROW, COL> operator-(double val) const
     {
-        return do_opCreateValue(val, [val](auto elem) -> double {
+        return do_opCreateValue([val](auto elem) -> double {
             return elem - val;
         });
     }
     Matrix<ROW, COL> operator*(double val) const
     {
-        return do_opCreateValue(val, [val](auto elem) -> double {
+        return do_opCreateValue([val](auto elem) -> double {
             return elem * val;
         });
     }
     Matrix<ROW, COL> operator/(double val) const
     {
-        return do_opCreateValue(val, [val](auto elem) -> double {
+        return do_opCreateValue([val](auto elem) -> double {
             return elem / val;
         });
     }
 
     Matrix<ROW, COL> &operator+=(double val)
     {
-        return do_opThisValue(val, [val](auto elem) -> double {
+        return do_opThisValue([val](auto elem) -> double {
             return elem + val;
         });
     }
     Matrix<ROW, COL> &operator-=(double val)
     {
-        return do_opThisValue(val, [val](auto elem) -> double {
+        return do_opThisValue([val](auto elem) -> double {
             return elem - val;
         });
     }
     Matrix<ROW, COL> &operator*=(double val)
     {
-        return do_opThisValue(val, [val](auto elem) -> double {
+        return do_opThisValue([val](auto elem) -> double {
             return elem * val;
         });
     }
     Matrix<ROW, COL> &operator/=(double val)
     {
-        return do_opThisValue(val, [val](auto elem) -> double {
+        return do_opThisValue([val](auto elem) -> double {
             return elem / val;
         });
     }
@@ -235,11 +235,43 @@ public:
         return this->m_data[i * COL + j];
     }
 
+    /// @brief Swap the inner raw data array of the matrix with the one passed
+    ///        as parameter.
+    /// @param array Array containing the raw data that will be swapped.
+    void swapData(std::array<double, ROW * COL> &array)
+    {
+        this->m_data.swap(array);
+    }
+
+    std::array<double, ROW * COL> &getRawData()
+    {
+        return m_data;
+    }
+
+    /// @brief Add a row to the current Matrix.
+    /// @return A new matrix with ROW + 1 rows and COL columns.
+    Matrix<ROW + 1, COL> addRow() const
+    {
+        size_t idx = 0;
+        size_t endLine = 0;
+        Matrix<ROW + 1, COL> mat;
+        auto &arr = mat.getRawData();
+
+        for (; idx < ROW * COL; idx++) {
+            arr[idx] = this->m_data[idx];
+        }
+        for (; endLine < COL - 1; endLine++) {
+            arr[idx + endLine] = 0;
+        }
+        arr[idx + endLine] = 1;
+        return mat;
+    }
+
 private:
     // Do op functions are used to factorize code.
 
     template <typename F>
-    Matrix<ROW, COL> do_opCreateValue(double value, F func) const
+    Matrix<ROW, COL> do_opCreateValue(F func) const
     {
         Matrix<ROW, COL> mat(*this);
 
@@ -260,7 +292,7 @@ private:
     }
 
     template <typename F>
-    Matrix<ROW, COL> &do_opThisValue(double value, F func)
+    Matrix<ROW, COL> &do_opThisValue(F func)
     {
         std::transform(this->m_data.begin(),
                        this->m_data.end(),
@@ -321,6 +353,9 @@ std::ostream &operator<<(std::ostream &s, const Math::Matrix<ROW, COL> &oth)
 
 /// @brief Alias of Matrix<3, 1> for 3D Vectors.
 typedef Math::Matrix<3, 1> Vector3D;
+
+/// @brief Alias of Matrix<4, 1> for 3D Vectors.
+typedef Math::Matrix<4, 1> Vector4D;
 
 /// @brief Alias of Matrix<3, 1> for 3D Points.
 typedef Math::Matrix<3, 1> Point3D;

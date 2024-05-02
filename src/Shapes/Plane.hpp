@@ -43,7 +43,7 @@ public:
         return true;
     }
 
-    virtual Vector3D getNormal(const Point3D &point) const override
+    virtual Vector3D getNormal(const Point3D &) const override
     {
         return Normal;
     }

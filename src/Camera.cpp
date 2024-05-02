@@ -36,7 +36,6 @@ static void applyDiffuseLight(Math::RGBA &loopColor,
 
 static void applySpecularLight(
     Math::RGBA &loopColor,
-    const Math::RGBA &closestColor,
     const Math::RGBA &lightColor,
     double dot,
     const Vector3D &viewDir,
@@ -92,7 +91,6 @@ static void applyLight(
         if (dot > 0)
             applyDiffuseLight(loopColor, closestColor, lightColor, dot);
         applySpecularLight(loopColor,
-                           closestColor,
                            lightColor,
                            dot,
                            viewDir,

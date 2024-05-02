@@ -28,11 +28,11 @@ public:
     DirectionalLight(const Vector3D& dir, const Math::RGBA& intens = Math::RGBA{1, 1, 1})
         : direction(dir.normalized()), intensity(intens) {}
 
-    virtual Math::RGBA getIntensityAt(const Point3D& point) const override {
+    virtual Math::RGBA getIntensityAt(const Point3D &) const override {
         return intensity;
     }
 
-    virtual Vector3D getDirectionToPoint(const Point3D& point) const override {
+    virtual Vector3D getDirectionToPoint(const Point3D &) const override {
         return direction * -1;
     }
 };
@@ -45,7 +45,7 @@ public:
     PointLight(const Point3D& pos, const Math::RGBA& intens = Math::RGBA{1, 1, 1})
         : position(pos), intensity(intens) {}
 
-    virtual Math::RGBA getIntensityAt(const Point3D& point) const override {
+    virtual Math::RGBA getIntensityAt(const Point3D &) const override {
         return intensity;
     }
 

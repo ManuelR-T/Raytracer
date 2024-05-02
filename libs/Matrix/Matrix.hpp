@@ -133,6 +133,7 @@ public:
     Matrix<ROW, COL> &operator=(Matrix<ROW, COL> &&oth)
     {
         this->m_data = oth.m_data;
+        return *this;
     }
 
     Matrix<ROW, COL> operator+(const Matrix<ROW, COL> &oth) const
@@ -187,6 +188,7 @@ public:
             return elem * val;
         });
     }
+
     Matrix<ROW, COL> operator/(double val) const
     {
         return do_opCreateValue([val](auto elem) -> double {
@@ -359,3 +361,18 @@ typedef Math::Matrix<4, 1> Vector4D;
 
 /// @brief Alias of Matrix<3, 1> for 3D Points.
 typedef Math::Matrix<3, 1> Point3D;
+
+// Correctly defined outside the class template definition
+template <size_t ROW, size_t COL>
+Math::Matrix<ROW, COL> operator*(const Math::Matrix<ROW, COL>& mat, double scalar) {
+    Math::Matrix<ROW, COL> result;
+    for (size_t i = 0; i < ROW * COL; ++i) {
+        result.m_data[i] = mat.m_data[i] * scalar;
+    }
+    return result;
+}
+
+template <size_t ROW, size_t COL>
+Math::Matrix<ROW, COL> operator*(double scalar, const Math::Matrix<ROW, COL>& mat) {
+    return mat * scalar;
+}

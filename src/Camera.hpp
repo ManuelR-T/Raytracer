@@ -7,44 +7,21 @@
 
 #pragma once
 
-#include "Shapes/IShape.hpp"
 #include "Matrix/Matrix.hpp"
 #include "RGBA.hpp"
 #include "Raytracer.hpp"
-
-#include <memory>
+#include "Scene.hpp"
 
 namespace RayTracer {
+class Scene;
 class Camera {
 public:
     Point3D origin;
 
-    Camera(const Point3D &origin = Point3D{0.f, 0.f, 1.f}) : origin(origin)
-    {
-    }
+    Camera(const Point3D &origin = Point3D{0.f, 0.f, 1.f});
 
-    Ray ray(double u, double v) const
-    {
-        return Ray(origin, Vector3D{u - 0.5, v - 0.5, -1}.normalized());
-    }
-
-    Math::RGBA
-    traceRay(const Ray &ray,
-             const std::vector<std::unique_ptr<IShape>> &shapes) const
-    {
-        Math::RGBA closestColor = defaultColor;
-        double minDist = std::numeric_limits<double>::infinity();
-
-        for (const auto &shape : shapes) {
-            double dist;
-            Math::RGBA hitColor;
-            if (shape->hits(ray, hitColor, dist) && dist < minDist) {
-                minDist = dist;
-                closestColor = hitColor;
-            }
-        }
-        return closestColor;
-    }
+    Ray ray(double u, double v) const;
+    Math::RGBA traceRay(const Ray &ray, const Scene &scene) const;
 
 private:
     Math::RGBA defaultColor{0, 0, 0};

@@ -7,4 +7,6 @@
 
 #pragma once
 
+#include "IShape.hpp"
 #include "Sphere.hpp"
+#include "Plane.hpp"

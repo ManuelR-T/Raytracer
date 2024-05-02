@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2024
 ** Raytracer
 ** File description:
-** Flat
+** Glassy
 */
 
 #pragma once
@@ -10,10 +10,10 @@
 #include "Material.hpp"
 
 namespace RayTracer {
-class Flat : public Material {
+class Glassy : public Material {
 public:
-    Flat(const Math::RGBA &color)
-        : Material(color, 1.0, 1000)
+    Glassy(const Math::RGBA &color)
+        : Material(color, 1.0, 10)
     {
     }
 };

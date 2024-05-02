@@ -7,6 +7,8 @@
 
 SRC =	 $(addsuffix .cpp, 				\
 			$(addprefix src/, 			\
+				Scene					\
+				Camera					\
 				main					\
 				Transformations/Transformation 	\
 			)	\

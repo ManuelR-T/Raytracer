@@ -17,4 +17,4 @@ jobs:
         needs: [commits, coding-style, tests]
         uses: ./.github/workflows/mirror.yml
         secrets:
-            KEY: ${{ secrets.KEY }}
+            KEY: ${{ secrets.SSH_KEY }}

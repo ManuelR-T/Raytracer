@@ -11,9 +11,11 @@
 #include "Scene.hpp"
 
 #include "Materials/Materials.hpp"
+#include "Transformations/Transformation.hpp"
 #include "Shapes/Shapes.hpp"
 
 #include <iostream>
+#include <cmath>
 
 int main() {
     RayTracer::Flat yellow(Math::RGBA(255, 255, 0));
@@ -22,6 +24,8 @@ int main() {
     RayTracer::Flat green(Math::RGBA(0, 255, 0));
 
     RayTracer::Scene scene(800, 600);
+    Vector3D pt{0.1, 0, -1};
+    Vector3D t{-0.5, 0, 0};
 
     scene.setCamera(RayTracer::Camera(Point3D{0, 0, 1}));
 

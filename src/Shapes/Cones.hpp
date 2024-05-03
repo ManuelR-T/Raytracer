@@ -52,7 +52,7 @@ namespace RayTracer
             auto proj = m_point + m_vect * ((ptToOrigin.dot(m_vect)) / m_vect.dot(m_vect));
             auto perp = pt - proj;
             auto tangent = (ptToOrigin * perp);
-            return (tangent * ptToOrigin).normalized();
+            return (tangent * ptToOrigin).normalized() * (-1);
         }
 
         private:

@@ -14,3 +14,4 @@
 #include "IShape.hpp"
 #include "Sphere.hpp"
 #include "Plane.hpp"
+#include "Cones.hpp"

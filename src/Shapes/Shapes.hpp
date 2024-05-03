@@ -7,6 +7,10 @@
 
 #pragma once
 
+/*
+    This file is used for includes purposes only.
+*/
+
 #include "IShape.hpp"
 #include "Sphere.hpp"
 #include "Plane.hpp"

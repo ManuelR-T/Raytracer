@@ -16,11 +16,11 @@ namespace RayTracer {
 
 class IShape {
 public:
-    virtual ~IShape()
-    {
-    }
+    virtual ~IShape() = default;
+
     virtual bool
     hits(const Ray &ray, Math::RGBA &hitColor, double &t) const = 0;
+
     virtual Vector3D getNormal(const Point3D &point) const = 0;
     virtual Material getMaterial() const = 0;
 };

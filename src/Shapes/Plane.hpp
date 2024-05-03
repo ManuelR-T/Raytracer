@@ -8,49 +8,44 @@
 #pragma once
 
 #include "../Materials/Material.hpp"
-#include "IShape.hpp"
+#include "AShape.hpp"
 #include "Matrix/Matrix.hpp"
 
 namespace RayTracer {
-class Plane : public IShape {
+class Plane : public AShape {
 public:
-    Point3D Point;
-    Vector3D Normal;
-    Material Jame;
 
     Plane(const Point3D &point,
           const Vector3D &normal,
           const Material &material)
-        : Point(point)
-        , Normal(normal.normalized())
-        , Jame(material)
+        :
+          AShape(point, material)
+        , m_normal(normal.normalized())
     {
     }
 
     virtual bool
     hits(const Ray &ray, Math::RGBA &hitColor, double &t) const override
     {
-        double denominator = Normal.dot(ray.m_direction);
+        double denominator = m_normal.dot(ray.m_direction);
         if (std::abs(denominator) < 1e-6) {
             return false;
         }
-        Vector3D p0_to_origin = Point.getVectorTo(ray.m_origin);
-        t = p0_to_origin.dot(Normal) / denominator;
+        Vector3D p0_to_origin = m_point.getVectorTo(ray.m_origin);
+        t = p0_to_origin.dot(m_normal) / denominator;
         if (t < 0) {
             return false;
         }
-        hitColor = Jame.color;
+        hitColor = m_material.color;
         return true;
     }
 
     virtual Vector3D getNormal(const Point3D &) const override
     {
-        return Normal;
+        return m_normal;
     }
 
-    virtual Material getMaterial() const override
-    {
-        return Jame;
-    }
+    private:
+    Vector3D m_normal;
 };
 } // namespace RayTracer

@@ -14,12 +14,8 @@
 #include <vector>
 
 namespace RayTracer {
-std::vector<std::unique_ptr<IShape>> shapes;
-std::vector<std::unique_ptr<ILight>> lights;
-std::unique_ptr<Camera> camera;
-int width, height;
 
-Scene::Scene(int w, int h) : width(w), height(h)
+Scene::Scene(int w, int h, int fov) : width(w), height(h), fov(fov)
 {
 }
 
@@ -46,7 +42,7 @@ void Scene::generateImage(std::ostream &out) const
         for (int x = width - 1; x >= 0; --x) {
             double u = double(x) / (width - 1);
             double v = double(y) / (height - 1);
-            Ray r = camera->ray(u, v);
+            Ray r = camera->ray(u, v, fov, double(width) / height);
             Math::RGBA color = camera->traceRay(r, *this);
             color.write_color(out);
         }

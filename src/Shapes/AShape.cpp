@@ -18,6 +18,7 @@ bool RayTracer::AShape::discriminant(double a,
                                      double &t) const
 {
     double delta = b * b - 4 * a * c;
+
     if (delta < 0) {
         return false;
     } else {

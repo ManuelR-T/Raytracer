@@ -43,7 +43,7 @@ int main() {
     // scene.addShape(std::make_unique<RayTracer::Sphere>
         // (Point3D{0.5, 0, -1}, 0.4, red));
     scene.addShape(std::make_unique<RayTracer::Cones>
-        (Point3D{0.5, 1, -1.5}, blue, 0.3, Vector3D{0, -1, 0}));
+        (Point3D{0.5, 0, -1.5}, blue, 0.5, Vector3D{0, -1, 0}));
     scene.addShape(std::make_unique<RayTracer::Sphere>
         (Point3D{-0.5, -0.5, -1}, 0.4, blue));
     scene.addShape(std::make_unique<RayTracer::Plane>

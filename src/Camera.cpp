@@ -57,9 +57,11 @@ static void applySpecularLight(
     const Vector3D &normal,
     const std::vector<std::unique_ptr<IShape>>::const_iterator &closestShapeIt)
 {
+    double shininess = (*closestShapeIt)->getMaterial().shininess;
+    if (shininess == 0)
+        return;
     Vector3D reflectDir = (2 * dot * normal - lightDir).normalized();
-    double spec = std::pow(std::max(viewDir.dot(reflectDir), .0),
-                           (*closestShapeIt)->getMaterial().shininess);
+    double spec = std::pow(std::max(viewDir.dot(reflectDir), .0), shininess);
     loopColor += lightColor * spec;
 }
 

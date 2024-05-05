@@ -24,7 +24,7 @@ int main() {
     RayTracer::Glassy blue(Math::RGBA(0, 0, 255));
     RayTracer::Flat green(Math::RGBA(0, 255, 0));
 
-    RayTracer::Scene scene(800, 600);
+    RayTracer::Scene scene(800, 600, 120);
     Vector3D pt{0.1, 0, -1};
     Vector3D t{-0.5, 0, 0};
     std::ofstream file("image.ppm");
@@ -35,6 +35,8 @@ int main() {
         //  (Point3D{0, -1, 1}, Math::RGBA(255, 255, 255)));
     scene.addLight(std::make_unique<RayTracer::PointLight>
          (Point3D{0, 1, 10}, Math::RGBA(255, 255, 255)));
+    scene.addLight(std::make_unique<RayTracer::PointLight>
+        (Point3D{-20, 1, -25}, Math::RGBA(255, 255, 255)));
     //scene.addLight(std::make_unique<RayTracer::DirectionalLight>
     //     (Vector3D{0, -1, 1}, Math::RGBA(255, 255, 255)));
 
@@ -47,7 +49,7 @@ int main() {
     scene.addShape(std::make_unique<RayTracer::Plane>
         (Point3D{0, 1, 0}, Vector3D{0, 1, 0}, green));
     scene.addShape(std::make_unique<RayTracer::Cube>
-        (Point3D{1.4, -0.5, -2}, 0.5, red));
+        (Point3D{1.4, -0.5, -1}, 0.5, red));
 
     scene.generateImage(file);
     return 0;

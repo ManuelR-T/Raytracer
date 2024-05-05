@@ -24,7 +24,7 @@ namespace RayTracer
         }
 
         protected:
-        bool discriminant(double a, double b, double c, double &pt) const;
+        bool discriminant(double a, double b, double c, double &t) const;
 
         Point3D m_point;
         Material m_material;

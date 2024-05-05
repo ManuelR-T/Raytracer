@@ -8,9 +8,14 @@
 #include "AShape.hpp"
 
 // To make AShape Abstract class
-RayTracer::AShape::~AShape() {}
+RayTracer::AShape::~AShape()
+{
+}
 
-bool RayTracer::AShape::discriminant(double a, double b, double c, double &t) const
+bool RayTracer::AShape::discriminant(double a,
+                                     double b,
+                                     double c,
+                                     double &t) const
 {
     double delta = b * b - 4 * a * c;
     if (delta < 0) {
@@ -20,7 +25,7 @@ bool RayTracer::AShape::discriminant(double a, double b, double c, double &t) co
         double t1 = (-b - sqrtDiscriminant) / (2 * a);
         double t2 = (-b + sqrtDiscriminant) / (2 * a);
 
-        t = t1 > 0 ? t1 : (t2 > 0 ? t2 : -1);
+        t = (t1 < t2) ? t1 : t2;
         if (t < 0)
             return false;
         return true;

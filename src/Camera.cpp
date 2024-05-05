@@ -15,13 +15,27 @@
 #include <tuple>
 
 namespace RayTracer {
-Camera::Camera(const Point3D &origin) : origin(origin)
+
+Camera::Camera(const Point3D &origin,
+               const Vector3D &direction,
+               const Vector3D &up)
+    : origin(origin)
+    , direction(direction.normalized())
+    , up(up.normalized())
 {
 }
 
-Ray Camera::ray(double u, double v) const
+Ray Camera::ray(double u, double v, double fov, double aspectRatio) const
 {
-    return Ray(origin, Vector3D{u - 0.5, v - 0.5, -1}.normalized());
+    Vector3D right = up.cross(direction).normalized();
+    Vector3D adjustedUp = direction.cross(right).normalized();
+    double scale = tan(fov * 0.5 * M_PI / 180);
+
+    Vector3D rayDirection = (right * (u - 0.5) * scale * aspectRatio +
+                             adjustedUp * (v - 0.5) * scale + direction)
+                                .normalized();
+
+    return Ray(origin, rayDirection);
 }
 
 static void applyDiffuseLight(Math::RGBA &loopColor,
@@ -85,7 +99,7 @@ static void applyLight(
         Math::RGBA loopColor = Math::RGBA{0, 0, 0, 1};
         Vector3D lightDir = light->getDirectionToPoint(hitPoint).normalized();
         Math::RGBA lightColor = light->getIntensityAt(hitPoint);
-        Vector3D normal = (*closestShapeIt)->getNormal(hitPoint);
+        Vector3D normal = (*closestShapeIt)->getNormal(hitPoint) * -1;
         double dot = std::max(lightDir.dot(normal), 0.0);
 
         if (dot > 0)
@@ -114,8 +128,12 @@ Math::RGBA Camera::traceRay(const Ray &ray, const Scene &scene) const
     if (closestShapeIt != scene.shapes.end()) {
         Math::RGBA finalColor = scene.ambientLight * closestColor;
 
-        applyLight(scene, closestShapeIt, closestColor, hitPoint,
-            finalColor, (ray.m_direction * -1).normalized());
+        applyLight(scene,
+                   closestShapeIt,
+                   closestColor,
+                   hitPoint,
+                   finalColor,
+                   (ray.m_direction).normalized());
         return finalColor.clamp();
     }
     return closestColor;

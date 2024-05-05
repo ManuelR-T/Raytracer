@@ -23,7 +23,7 @@ public:
     std::vector<std::unique_ptr<ILight>> lights;
     std::unique_ptr<Camera> camera;
     int width, height;
-    Math::RGBA ambientLight{1, 1, 1};
+    Math::RGBA ambientLight{20, 20, 20};
 
     Scene(int w, int h);
     Scene(const Scene &) = delete;

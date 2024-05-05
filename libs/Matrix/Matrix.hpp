@@ -27,8 +27,6 @@ public:
 
     Matrix(std::initializer_list<double> val)
     {
-        size_t idx = 0;
-
         if (!val.size() || val.size() != ROW * COL)
             throw std::runtime_error("Incorrect number of argument.\n");
         std::copy(val.begin(), val.end(), m_data.begin());

@@ -9,6 +9,7 @@
 #include "Lights.hpp"
 #include "Shapes/IShape.hpp"
 
+#include <climits>
 #include <memory>
 #include <vector>
 
@@ -41,8 +42,8 @@ void Scene::generateImage(std::ostream &out) const
 {
     out << "P3\n" << width << ' ' << height << "\n255\n";
 
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
+    for (int y = height - 1; y >= 0; --y) {
+        for (int x = width - 1; x >= 0; --x) {
             double u = double(x) / (width - 1);
             double v = double(y) / (height - 1);
             Ray r = camera->ray(u, v);

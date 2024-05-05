@@ -11,7 +11,10 @@ SRC =	 $(addsuffix .cpp, 				\
 				Camera					\
 				main					\
 				Transformations/Transformation 	\
-				Shapes/AShape 	\
+				$(addprefix Shapes/, 	\
+					AShape				\
+					Cube				\
+				)	\
 			)	\
 		)
 

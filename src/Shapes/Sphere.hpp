@@ -38,7 +38,7 @@ public:
 
     virtual Vector3D getNormal(const Point3D &othPoint) const override
     {
-        return othPoint.getVectorTo(m_point).normalized();
+        return othPoint.getVectorTo(m_point).normalized() * -1;
     }
 
 private:

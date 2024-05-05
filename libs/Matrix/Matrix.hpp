@@ -31,10 +31,7 @@ public:
 
         if (!val.size() || val.size() != ROW * COL)
             throw std::runtime_error("Incorrect number of argument.\n");
-        for (auto value : val) {
-            this->m_data[idx] = value;
-            idx++;
-        }
+        std::copy(val.begin(), val.end(), m_data.begin());
     }
 
     Matrix(const Matrix<ROW, COL> &) = default;
@@ -237,6 +234,33 @@ public:
         return this->m_data[i * COL + j];
     }
 
+    double &operator[](size_t index) {
+        if (index >= ROW * COL) {
+            throw std::out_of_range("Index out of range.");
+        }
+        return m_data[index];
+    }
+
+    const double &operator[](size_t index) const {
+        if (index >= ROW * COL) {
+            throw std::out_of_range("Index out of range.");
+        }
+        return m_data[index];
+    }
+
+
+    Matrix<ROW, COL> cross(const Matrix<ROW, COL> &oth) const
+    {
+        if (ROW != 3 || COL != 1) {
+            throw std::runtime_error("Cross product is only defined for 3D vectors.");
+        }
+        return Matrix<ROW, COL>{
+            y() * oth.z() - z() * oth.y(),
+            z() * oth.x() - x() * oth.z(),
+            x() * oth.y() - y() * oth.x()
+        };
+    }
+
     /// @brief Swap the inner raw data array of the matrix with the one passed
     ///        as parameter.
     /// @param array Array containing the raw data that will be swapped.
@@ -268,6 +292,30 @@ public:
         arr[idx + endLine] = 1;
         return mat;
     }
+
+    Matrix<ROW, COL> abs() const
+    {
+        return do_opCreateValue([](auto elem) -> double {
+            return std::abs(elem);
+        });
+    }
+
+    double &x() {
+        static_assert(ROW >= 1 && COL == 1, "Matrix is not a 3D vector.");
+        return m_data[0];
+    }
+    double &y() {
+        static_assert(ROW >= 2 && COL == 1, "Matrix is not a 3D vector.");
+        return m_data[1];
+    }
+    double &z() {
+        static_assert(ROW >= 3 && COL == 1, "Matrix is not a 3D vector.");
+        return m_data[2];
+    }
+
+    double x() const { return m_data[0]; }
+    double y() const { return m_data[1]; }
+    double z() const { return m_data[2]; }
 
 private:
     // Do op functions are used to factorize code.

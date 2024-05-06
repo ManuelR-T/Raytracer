@@ -34,11 +34,11 @@ int main() {
     // scene.addLight(std::make_unique<RayTracer::PointLight>
         //  (Point3D{0, -1, 1}, Math::RGBA(255, 255, 255)));
     scene.addLight(std::make_unique<RayTracer::PointLight>
-         (Point3D{0, 1, 10}, Math::RGBA(255, 255, 255)));
+         (Point3D{0, 10, -10}, Math::RGBA(255, 255, 255)));
     scene.addLight(std::make_unique<RayTracer::PointLight>
-        (Point3D{-20, 1, -25}, Math::RGBA(255, 255, 255)));
-    //scene.addLight(std::make_unique<RayTracer::DirectionalLight>
-    //     (Vector3D{0, -1, 1}, Math::RGBA(255, 255, 255)));
+        (Point3D{20, 1, -25}, Math::RGBA(255, 255, 255)));
+    // scene.addLight(std::make_unique<RayTracer::DirectionalLight>
+        // (Vector3D{0, -1, 1}, Math::RGBA(255, 255, 255)));
 
     // scene.addShape(std::make_unique<RayTracer::Sphere>
         // (Point3D{0.5, 0, -1}, 0.4, red));

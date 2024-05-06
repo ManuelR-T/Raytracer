@@ -12,6 +12,7 @@
 #include "Shapes/IShape.hpp"
 
 #include <memory>
+#include <sys/types.h>
 #include <tuple>
 
 namespace RayTracer {
@@ -95,11 +96,29 @@ static void applyLight(
     const Math::RGBA &closestColor,
     const Point3D &hitPoint,
     Math::RGBA &finalColor,
-    const Vector3D &viewDir)
+    const Vector3D &viewDir
+)
 {
     for (const auto &light : scene.lights) {
         Math::RGBA loopColor = Math::RGBA{0, 0, 0, 1};
         Vector3D lightDir = light->getDirectionToPoint(hitPoint).normalized();
+
+        Ray lightRay(hitPoint, lightDir * (-1));
+        double currShapeToLight = lightDir.length();
+        bool isCollision = false;
+        for (auto &obj: scene.shapes) {
+            if (*closestShapeIt == obj)
+                continue;
+            Math::RGBA color;
+            double distance = 0.f;
+            if (obj->hits(lightRay, color, distance) == true && distance < currShapeToLight) {
+                isCollision = true;
+                break;
+            }
+        }
+        if (isCollision)
+            continue;
+
         Math::RGBA lightColor = light->getIntensityAt(hitPoint);
         Vector3D normal = (*closestShapeIt)->getNormal(hitPoint) * -1;
         double dot = std::max(lightDir.dot(normal), 0.0);
@@ -113,7 +132,7 @@ static void applyLight(
                            lightDir,
                            normal,
                            closestShapeIt);
-        finalColor += loopColor;
+        finalColor += loopColor * (0.8 * currShapeToLight);
     }
 }
 

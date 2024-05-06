@@ -7,12 +7,10 @@
 
 #include "SceneParser.hpp"
 #include "Exception.hpp"
-#include "Matrix/Matrix.hpp"
 #include "Camera.hpp"
 #include "Lights.hpp"
 #include "Parsing/SceneParser.hpp"
 #include "RGBA.hpp"
-#include "Scene.hpp"
 #include "Shapes/Shapes.hpp"
 
 #include <exception>
@@ -66,11 +64,30 @@ Math::RGBA RayTracer::SceneParser::getColour(const libconfig::Setting &list)
 {
     const libconfig::Setting &colours = list.lookup("color");
     int color[3];
+    std::string str;
 
     if (!(colours.lookupValue("r", color[0])
         && colours.lookupValue("g", color[1])
         && colours.lookupValue("b", color[2])))
         throw RayTracer::ParsingValueNotFound();
+    return Math::RGBA(color[0], color[1], color[2]);
+}
+
+RayTracer::Material RayTracer::SceneParser::getMatColour(const libconfig::Setting &list)
+{
+    const libconfig::Setting &colours = list.lookup("color");
+    int color[3];
+    std::string str;
+
+    if (!(colours.lookupValue("r", color[0])
+        && colours.lookupValue("g", color[1])
+        && colours.lookupValue("b", color[2])
+        && list.lookupValue("material", str)))
+        throw RayTracer::ParsingValueNotFound();
+    if (str == "Glassy")
+        return RayTracer::Glassy(Math::RGBA(color[0], color[1], color[2]));
+    if (str == "Flat")
+        return RayTracer::Flat(Math::RGBA(color[0], color[1], color[2]));
     return Math::RGBA(color[0], color[1], color[2]);
 }
 
@@ -87,7 +104,7 @@ void RayTracer::SceneParser::parseSphere(const libconfig::Setting &primitives)
             m_scene.addShape(std::make_unique<RayTracer::Sphere>(
                 getCoords(spheres[i]),
                 r,
-                getColour(spheres[i])));
+                getMatColour(spheres[i])));
         }
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
@@ -109,7 +126,7 @@ void RayTracer::SceneParser::parsePlanes(const libconfig::Setting &primitives)
             m_scene.addShape(std::make_unique<RayTracer::Plane>(
                 getCoords(position),
                 vec,
-                getColour(planes[i])));
+                getMatColour(planes[i])));
         }
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
@@ -131,7 +148,7 @@ void RayTracer::SceneParser::parseCones(const libconfig::Setting &primitives)
             const libconfig::Setting &axis = cones[i].lookup("axis");
             m_scene.addShape(std::make_unique<RayTracer::Cones>(
                 getCoords(position),
-                getColour(cones[i]),
+                getMatColour(cones[i]),
                 r,
                 getAxis(axis)));
         }
@@ -154,7 +171,7 @@ void RayTracer::SceneParser::parseCubes(const libconfig::Setting &primitives)
             m_scene.addShape(std::make_unique<RayTracer::Cube>(
                 getCoords(cubes[i]),
                 r,
-                getColour(cubes[i])));
+                getMatColour(cubes[i])));
         }
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;

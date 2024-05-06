@@ -6,7 +6,6 @@
 */
 
 #pragma once
-#include "Matrix/Matrix.hpp"
 #include "RGBA.hpp"
 #include "Scene.hpp"
 #include <libconfig.h++>
@@ -25,6 +24,7 @@ namespace RayTracer {
             void getDirectionnalLight(const libconfig::Setting &list);
             void parseCamera(const libconfig::Setting &);
             Math::RGBA getColour(const libconfig::Setting &);
+            RayTracer::Material getMatColour(const libconfig::Setting &);
             Point3D getCoords(const libconfig::Setting &);
             Vector3D getAxis(const libconfig::Setting &);
             void parsePrimitives(const libconfig::Setting &);

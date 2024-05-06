@@ -5,3 +5,4 @@ raytracer
 *.log
 *.ppm
 .clang-format
+*.raytracer

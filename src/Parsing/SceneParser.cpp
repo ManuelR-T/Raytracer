@@ -10,14 +10,11 @@
 #include "Matrix/Matrix.hpp"
 #include "Camera.hpp"
 #include "Lights.hpp"
-#include "Materials/Glassy.hpp"
 #include "Parsing/SceneParser.hpp"
+#include "RGBA.hpp"
 #include "Scene.hpp"
-#include "Shapes/Sphere.hpp"
-#include "define.hpp"
-
-#include "Materials/Materials.hpp"
 #include "Shapes/Shapes.hpp"
+
 #include <exception>
 #include <iostream>
 #include <libconfig.h++>
@@ -43,37 +40,57 @@ void RayTracer::SceneParser::parseCamera(const libconfig::Setting &camera)
     m_scene.setCamera(cam);
 }
 
+Point3D RayTracer::SceneParser::getCoords(const libconfig::Setting &list)
+{
+    double pos[3];
+
+    if (!(list.lookupValue("x", pos[0])
+        && list.lookupValue("y", pos[1])
+        && list.lookupValue("z", pos[2])))
+        throw RayTracer::ParsingValueNotFound();
+    return Point3D{pos[0],pos[1],pos[2]};
+}
+
+Vector3D RayTracer::SceneParser::getAxis(const libconfig::Setting &list)
+{
+    double pos[3];
+
+    if (!(list.lookupValue("x", pos[0])
+        && list.lookupValue("y", pos[1])
+        && list.lookupValue("z", pos[2])))
+        throw RayTracer::ParsingValueNotFound();
+    return Vector3D{pos[0],pos[1],pos[2]};
+}
+
+Math::RGBA RayTracer::SceneParser::getColour(const libconfig::Setting &list)
+{
+    const libconfig::Setting &colours = list.lookup("color");
+    int color[3];
+
+    if (!(colours.lookupValue("r", color[0])
+        && colours.lookupValue("g", color[1])
+        && colours.lookupValue("b", color[2])))
+        throw RayTracer::ParsingValueNotFound();
+    return Math::RGBA(color[0], color[1], color[2]);
+}
+
 void RayTracer::SceneParser::parseSphere(const libconfig::Setting &primitives)
 {
     try {
         const libconfig::Setting &spheres = primitives.lookup("spheres");
-        int pos[4];
-        int color[3];
+        double r;
         const int ctr = spheres.getLength();
 
         for (int i = 0; i < ctr; i++) {
-            if (!(spheres[i].lookupValue("x", pos[0])
-                && spheres[i].lookupValue("y", pos[1])
-                && spheres[i].lookupValue("z", pos[2])
-                && spheres[i].lookupValue("r", pos[3])))
+            if (!spheres[i].lookupValue("r", r))
                 continue;
-            const libconfig::Setting &colours = spheres[i].lookup("color");
-                if (!(colours.lookupValue("r", color[0])
-                    && colours.lookupValue("g", color[1])
-                    && colours.lookupValue("b", color[2])))
-                    continue;
             m_scene.addShape(std::make_unique<RayTracer::Sphere>(
-                Point3D{
-                    static_cast<double>(pos[0]),
-                    static_cast<double>(pos[1]),
-                    static_cast<double>(pos[2])},
-                pos[3],
-                Math::RGBA(
-                    static_cast<double>(color[0]),
-                    static_cast<double>(color[1]),
-                    static_cast<double>(color[2]))));
+                getCoords(spheres[i]),
+                r,
+                getColour(spheres[i])));
         }
     } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
         return;
     }
 }
@@ -82,42 +99,20 @@ void RayTracer::SceneParser::parsePlanes(const libconfig::Setting &primitives)
 {
     try {
         const libconfig::Setting &planes = primitives.lookup("planes");
-        int pos[3];
-        int axe[3];
-        int color[3];
+        Vector3D vec;
         const int ctr = planes.getLength();
 
         for (int i = 0; i < ctr; i++) {
-            const libconfig::Setting &axis = planes[i].lookup("axis");
-            if (!(axis.lookupValue("x", axe[0])
-                && axis.lookupValue("y", axe[1])
-                && axis.lookupValue("z", axe[2])))
-                continue;
             const libconfig::Setting &position = planes[i].lookup("position");
-            if (!(position.lookupValue("x", pos[0])
-                && position.lookupValue("y", pos[1])
-                && position.lookupValue("z", pos[2])))
-                continue;
-            const libconfig::Setting &colours = planes[i].lookup("color");
-                if (!(colours.lookupValue("r", color[0])
-                    && colours.lookupValue("g", color[1])
-                    && colours.lookupValue("b", color[2])))
-                    continue;
+            const libconfig::Setting &axis = planes[i].lookup("axis");
+            vec = getAxis(axis);
             m_scene.addShape(std::make_unique<RayTracer::Plane>(
-                Point3D{
-                    static_cast<double>(axe[0]),
-                    static_cast<double>(axe[1]),
-                    static_cast<double>(axe[2])},
-                Vector3D{
-                    static_cast<double>(pos[0]),
-                    static_cast<double>(pos[1]),
-                    static_cast<double>(pos[2])},
-                Math::RGBA(
-                    static_cast<double>(color[0]),
-                    static_cast<double>(color[1]),
-                    static_cast<double>(color[2]))));
+                getCoords(position),
+                vec,
+                getColour(planes[i])));
         }
     } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
         return;
     }
 }
@@ -126,45 +121,43 @@ void RayTracer::SceneParser::parseCones(const libconfig::Setting &primitives)
 {
     try {
         const libconfig::Setting &cones = primitives.lookup("cones");
-        int pos[4];
-        int axe[3];
-        int color[3];
+        double r;
         const int ctr = cones.getLength();
 
         for (int i = 0; i < ctr; i++) {
             const libconfig::Setting &position = cones[i].lookup("position");
-            if (!(position.lookupValue("x", pos[0])
-                && position.lookupValue("y", pos[1])
-                && position.lookupValue("z", pos[2])
-                && cones[i].lookupValue("r", pos[3])))
+            if (!(cones[i].lookupValue("r", r)))
                 continue;
-            const libconfig::Setting &colours = cones[i].lookup("color");
-                if (!(colours.lookupValue("r", color[0])
-                    && colours.lookupValue("g", color[1])
-                    && colours.lookupValue("b", color[2])))
-                    continue;
             const libconfig::Setting &axis = cones[i].lookup("axis");
-            if (!(axis.lookupValue("x", axe[0])
-                && axis.lookupValue("y", axe[1])
-                && axis.lookupValue("z", axe[2])))
-                continue;
             m_scene.addShape(std::make_unique<RayTracer::Cones>(
-                Point3D{
-                    static_cast<double>(pos[0]),
-                    static_cast<double>(pos[1]),
-                    static_cast<double>(pos[2])},
-                Math::RGBA(
-                    static_cast<double>(color[0]),
-                    static_cast<double>(color[1]),
-                    static_cast<double>(color[2])),
-                pos[3],
-                Vector3D{
-                    static_cast<double>(pos[0]),
-                    static_cast<double>(pos[1]),
-                    static_cast<double>(pos[2])}
-                ));
+                getCoords(position),
+                getColour(cones[i]),
+                r,
+                getAxis(axis)));
         }
     } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return;
+    }
+}
+
+void RayTracer::SceneParser::parseCubes(const libconfig::Setting &primitives)
+{
+    try {
+        const libconfig::Setting &cubes = primitives.lookup("cubes");
+        double r;
+        const int ctr = cubes.getLength();
+
+        for (int i = 0; i < ctr; i++) {
+            if (!(cubes[i].lookupValue("r", r)))
+                continue;
+            m_scene.addShape(std::make_unique<RayTracer::Cube>(
+                getCoords(cubes[i]),
+                r,
+                getColour(cubes[i])));
+        }
+    } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
         return;
     }
 }
@@ -177,6 +170,29 @@ void RayTracer::SceneParser::parsePrimitives(const libconfig::Setting &primitive
         parseSphere(primitives);
         parsePlanes(primitives);
         parseCones(primitives);
+        parseCubes(primitives);
+    }
+}
+
+void RayTracer::SceneParser::getPointLight(const libconfig::Setting &list)
+{
+    int ctr = list.getLength();
+
+    for (int i = 0; i < ctr; i++) {
+        m_scene.addLight(std::make_unique<RayTracer::PointLight>(
+            getCoords(list[i]),
+            getColour(list[i])));
+    }
+}
+
+void RayTracer::SceneParser::getDirectionnalLight(const libconfig::Setting &list)
+{
+    int ctr = list.getLength();
+
+    for (int i = 0; i < ctr; i++) {
+        m_scene.addLight(std::make_unique<RayTracer::DirectionalLight>(
+            getAxis(list[i]),
+            getColour(list[i])));
     }
 }
 
@@ -184,11 +200,12 @@ void RayTracer::SceneParser::parseLights(const libconfig::Setting &lights)
 {
     try {
         const libconfig::Setting &point_lights = lights.lookup("point");
-        getLightCoords<RayTracer::PointLight>(point_lights);
+        getPointLight(point_lights);
 
         const libconfig::Setting &directional_lights = lights.lookup("directional");
-        getLightCoords<RayTracer::DirectionalLight>(directional_lights);
-    } catch (libconfig::SettingNotFoundException &e) {
+        getDirectionnalLight(directional_lights);
+    } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
         return;
     }
 }

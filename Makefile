@@ -7,6 +7,9 @@
 
 SRC =	 $(addsuffix .cpp, 				\
 			$(addprefix src/, 			\
+				$(addprefix Parsing/, 	\
+					SceneParser)		\
+				Exception				\
 				Scene					\
 				Camera					\
 				main					\
@@ -23,7 +26,7 @@ OBJ = $(SRC:.cpp=.o)
 NAME = raytracer
 
 CXX = g++
-CFLAGS = -W -Wall -Wextra
+CFLAGS = -W -Wall -Wextra -lconfig++
 CPPFLAGS = -iquote./include -iquote./libs -std=c++20
 
 all: $(NAME)

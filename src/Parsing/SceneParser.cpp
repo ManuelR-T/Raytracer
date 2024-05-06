@@ -107,7 +107,6 @@ void RayTracer::SceneParser::parseSphere(const libconfig::Setting &primitives)
                 getMatColour(spheres[i])));
         }
     } catch (std::exception &e) {
-        std::cerr << e.what() << std::endl;
         return;
     }
 }
@@ -129,7 +128,6 @@ void RayTracer::SceneParser::parsePlanes(const libconfig::Setting &primitives)
                 getMatColour(planes[i])));
         }
     } catch (std::exception &e) {
-        std::cerr << e.what() << std::endl;
         return;
     }
 }
@@ -153,7 +151,6 @@ void RayTracer::SceneParser::parseCones(const libconfig::Setting &primitives)
                 getAxis(axis)));
         }
     } catch (std::exception &e) {
-        std::cerr << e.what() << std::endl;
         return;
     }
 }
@@ -174,7 +171,6 @@ void RayTracer::SceneParser::parseCubes(const libconfig::Setting &primitives)
                 getMatColour(cubes[i])));
         }
     } catch (std::exception &e) {
-        std::cerr << e.what() << std::endl;
         return;
     }
 }

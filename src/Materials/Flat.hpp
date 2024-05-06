@@ -13,7 +13,7 @@ namespace RayTracer {
 class Flat : public Material {
 public:
     Flat(const Math::RGBA &color)
-        : Material(color, 1.0, 1000)
+        : Material(color, 1.0, 0)
     {
     }
 };

@@ -18,6 +18,7 @@
 
 #include "Materials/Materials.hpp"
 #include "Shapes/Shapes.hpp"
+#include <exception>
 #include <iostream>
 #include <libconfig.h++>
 #include <memory>
@@ -121,6 +122,53 @@ void RayTracer::SceneParser::parsePlanes(const libconfig::Setting &primitives)
     }
 }
 
+void RayTracer::SceneParser::parseCones(const libconfig::Setting &primitives)
+{
+    try {
+        const libconfig::Setting &cones = primitives.lookup("cones");
+        int pos[4];
+        int axe[3];
+        int color[3];
+        const int ctr = cones.getLength();
+
+        for (int i = 0; i < ctr; i++) {
+            const libconfig::Setting &position = cones[i].lookup("position");
+            if (!(position.lookupValue("x", pos[0])
+                && position.lookupValue("y", pos[1])
+                && position.lookupValue("z", pos[2])
+                && cones[i].lookupValue("r", pos[3])))
+                continue;
+            const libconfig::Setting &colours = cones[i].lookup("color");
+                if (!(colours.lookupValue("r", color[0])
+                    && colours.lookupValue("g", color[1])
+                    && colours.lookupValue("b", color[2])))
+                    continue;
+            const libconfig::Setting &axis = cones[i].lookup("axis");
+            if (!(axis.lookupValue("x", axe[0])
+                && axis.lookupValue("y", axe[1])
+                && axis.lookupValue("z", axe[2])))
+                continue;
+            m_scene.addShape(std::make_unique<RayTracer::Cones>(
+                Point3D{
+                    static_cast<double>(pos[0]),
+                    static_cast<double>(pos[1]),
+                    static_cast<double>(pos[2])},
+                Math::RGBA(
+                    static_cast<double>(color[0]),
+                    static_cast<double>(color[1]),
+                    static_cast<double>(color[2])),
+                pos[3],
+                Vector3D{
+                    static_cast<double>(pos[0]),
+                    static_cast<double>(pos[1]),
+                    static_cast<double>(pos[2])}
+                ));
+        }
+    } catch (std::exception &e) {
+        return;
+    }
+}
+
 void RayTracer::SceneParser::parsePrimitives(const libconfig::Setting &primitives)
 {
     int ctr = primitives.getLength();
@@ -155,7 +203,8 @@ RayTracer::Scene &RayTracer::SceneParser::parseScene(const std::string &filename
         const libconfig::Setting &camera = root.lookup("camera");
 
         if (!(camera[0].lookupValue("width", m_scene.width)
-            && camera[0].lookupValue("height", m_scene.height)))
+            && camera[0].lookupValue("height", m_scene.height)
+            && camera.lookupValue("fieldOfView", m_scene.fov)))
             throw RayTracer::ParsingValueNotFound();
         parseCamera(camera);
         const libconfig::Setting &primitives = root.lookup("primitives");

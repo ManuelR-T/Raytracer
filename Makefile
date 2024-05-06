@@ -14,6 +14,10 @@ SRC =	 $(addsuffix .cpp, 				\
 				Camera					\
 				main					\
 				Transformations/Transformation 	\
+				$(addprefix Shapes/, 	\
+					AShape				\
+					Cube				\
+				)	\
 			)	\
 		)
 
@@ -23,7 +27,7 @@ NAME = raytracer
 
 CXX = g++
 CFLAGS = -W -Wall -Wextra -lconfig++
-CPPFLAGS = -iquote./include -iquote./libs -iquote./src
+CPPFLAGS = -iquote./include -iquote./libs -iquote./src -std=c++20
 
 all: $(NAME)
 

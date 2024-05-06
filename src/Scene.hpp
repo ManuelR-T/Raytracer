@@ -22,10 +22,10 @@ public:
     std::vector<std::unique_ptr<IShape>> shapes;
     std::vector<std::unique_ptr<ILight>> lights;
     std::unique_ptr<Camera> camera;
-    int width, height;
-    Math::RGBA ambientLight{1, 1, 1};
+    int width, height, fov;
+    Math::RGBA ambientLight{20, 20, 20};
 
-    Scene(int w, int h);
+    Scene(int w, int h, int fov);
     Scene(const Scene &) = delete;
     Scene &operator=(const Scene &) = delete;
 

@@ -4,3 +4,4 @@ raytracer
 .cache/
 *.log
 *.ppm
+.clang-format

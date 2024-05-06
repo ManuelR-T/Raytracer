@@ -9,6 +9,7 @@ SRC =	 $(addsuffix .cpp, 				\
 			$(addprefix src/, 			\
 				$(addprefix Parsing/, 	\
 					SceneParser)		\
+				Exception				\
 				Scene					\
 				Camera					\
 				main					\

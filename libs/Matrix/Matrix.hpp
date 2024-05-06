@@ -70,11 +70,8 @@ public:
     /// @brief Dot product between 2 Vectors of N rows.
     ///        The current Matrix and the one passed as argument
     ///        MUST be vectors of same dimensions.
-    double dot(const Matrix<ROW, 1> &vect) const
+    double dot(const Matrix<ROW, 1> &vect) const requires (COL == 1)
     {
-        if (COL != 1) {
-            throw std::runtime_error("Matrix must only have 1 Column.\n");
-        }
         auto it_this = this->m_data.begin();
         auto it_mat = vect.m_data.begin();
         double res = 0.f;
@@ -247,11 +244,8 @@ public:
     }
 
 
-    Matrix<ROW, COL> cross(const Matrix<ROW, COL> &oth) const
+    Matrix<ROW, COL> cross(const Matrix<ROW, COL> &oth) const requires (ROW == 3 && COL == 1)
     {
-        if (ROW != 3 || COL != 1) {
-            throw std::runtime_error("Cross product is only defined for 3D vectors.");
-        }
         return Matrix<ROW, COL>{
             y() * oth.z() - z() * oth.y(),
             z() * oth.x() - x() * oth.z(),

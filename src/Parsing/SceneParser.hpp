@@ -7,7 +7,8 @@
 
 #pragma once
 #include "RGBA.hpp"
-#include "Scene.hpp"
+#include "Matrix/Matrix.hpp"
+#include "../Scene.hpp"
 #include <libconfig.h++>
 #include <string>
 

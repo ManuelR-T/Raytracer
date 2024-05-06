@@ -6,12 +6,12 @@
 */
 
 #include "SceneParser.hpp"
-#include "Exception.hpp"
-#include "Camera.hpp"
-#include "Lights.hpp"
-#include "Parsing/SceneParser.hpp"
+#include "../Exception.hpp"
+#include "../Camera.hpp"
+#include "../Lights.hpp"
+#include "../Parsing/SceneParser.hpp"
 #include "RGBA.hpp"
-#include "Shapes/Shapes.hpp"
+#include "../Shapes/Shapes.hpp"
 
 #include <exception>
 #include <iostream>
@@ -232,7 +232,7 @@ RayTracer::Scene &RayTracer::SceneParser::parseScene(const std::string &filename
     libconfig::Config conf;
 
     try {
-        conf.readFile(filename);
+        conf.readFile(filename.c_str());
         const libconfig::Setting &root = conf.getRoot();
         const libconfig::Setting &camera = root.lookup("camera");
 

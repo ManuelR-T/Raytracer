@@ -10,9 +10,11 @@
 #include "../Camera.hpp"
 #include "../Lights.hpp"
 #include "../Parsing/SceneParser.hpp"
-#include "RGBA.hpp"
+#include "Matrix/Matrix.hpp"
+#include "ParseInformations.hpp"
 #include "../Shapes/Shapes.hpp"
 
+#include <array>
 #include <exception>
 #include <iostream>
 #include <libconfig.h++>
@@ -25,70 +27,17 @@ RayTracer::SceneParser::SceneParser(RayTracer::Scene &scene) : m_scene(scene)
 void RayTracer::SceneParser::parseCamera(const libconfig::Setting &camera)
 {
     const libconfig::Setting &position = camera[1];
-    int pos[3] = {0};
+    std::array<double, 3> pos;
 
     if(!(position.lookupValue("x", pos[0])
         && position.lookupValue("y", pos[1])
         && position.lookupValue("z", pos[2])))
         throw RayTracer::ParsingValueNotFound();
-    RayTracer::Camera cam(Point3D{
-            static_cast<double>(pos[0]),
-            static_cast<double>(pos[1]),
-            static_cast<double>(pos[2])});
+    Vector3D vec = Vector3D{pos[0], pos[1], pos[2]};
+    RayTracer::Camera cam(vec);
+    ParseInformations::getRotation(camera, cam.direction);
+    ParseInformations::getTranslation(camera, cam.origin);
     m_scene.setCamera(cam);
-}
-
-Point3D RayTracer::SceneParser::getCoords(const libconfig::Setting &list)
-{
-    double pos[3];
-
-    if (!(list.lookupValue("x", pos[0])
-        && list.lookupValue("y", pos[1])
-        && list.lookupValue("z", pos[2])))
-        throw RayTracer::ParsingValueNotFound();
-    return Point3D{pos[0],pos[1],pos[2]};
-}
-
-Vector3D RayTracer::SceneParser::getAxis(const libconfig::Setting &list)
-{
-    double pos[3];
-
-    if (!(list.lookupValue("x", pos[0])
-        && list.lookupValue("y", pos[1])
-        && list.lookupValue("z", pos[2])))
-        throw RayTracer::ParsingValueNotFound();
-    return Vector3D{pos[0],pos[1],pos[2]};
-}
-
-Math::RGBA RayTracer::SceneParser::getColour(const libconfig::Setting &list)
-{
-    const libconfig::Setting &colours = list.lookup("color");
-    int color[3];
-    std::string str;
-
-    if (!(colours.lookupValue("r", color[0])
-        && colours.lookupValue("g", color[1])
-        && colours.lookupValue("b", color[2])))
-        throw RayTracer::ParsingValueNotFound();
-    return Math::RGBA(color[0], color[1], color[2]);
-}
-
-RayTracer::Material RayTracer::SceneParser::getMatColour(const libconfig::Setting &list)
-{
-    const libconfig::Setting &colours = list.lookup("color");
-    int color[3];
-    std::string str;
-
-    if (!(colours.lookupValue("r", color[0])
-        && colours.lookupValue("g", color[1])
-        && colours.lookupValue("b", color[2])
-        && list.lookupValue("material", str)))
-        throw RayTracer::ParsingValueNotFound();
-    if (str == "Glassy")
-        return RayTracer::Glassy(Math::RGBA(color[0], color[1], color[2]));
-    if (str == "Flat")
-        return RayTracer::Flat(Math::RGBA(color[0], color[1], color[2]));
-    return Math::RGBA(color[0], color[1], color[2]);
 }
 
 void RayTracer::SceneParser::parseSphere(const libconfig::Setting &primitives)
@@ -102,9 +51,9 @@ void RayTracer::SceneParser::parseSphere(const libconfig::Setting &primitives)
             if (!spheres[i].lookupValue("r", r))
                 continue;
             m_scene.addShape(std::make_unique<RayTracer::Sphere>(
-                getCoords(spheres[i]),
+                ParseInformations::getCoords(spheres[i]),
                 r,
-                getMatColour(spheres[i])));
+                ParseInformations::getMatColour(spheres[i])));
         }
     } catch (std::exception &e) {
         return;
@@ -121,11 +70,11 @@ void RayTracer::SceneParser::parsePlanes(const libconfig::Setting &primitives)
         for (int i = 0; i < ctr; i++) {
             const libconfig::Setting &position = planes[i].lookup("position");
             const libconfig::Setting &axis = planes[i].lookup("axis");
-            vec = getAxis(axis);
+            vec = ParseInformations::getAxis(axis);
             m_scene.addShape(std::make_unique<RayTracer::Plane>(
-                getCoords(position),
+                ParseInformations::getCoords(position),
                 vec,
-                getMatColour(planes[i])));
+                ParseInformations::getMatColour(planes[i])));
         }
     } catch (std::exception &e) {
         return;
@@ -145,10 +94,10 @@ void RayTracer::SceneParser::parseCones(const libconfig::Setting &primitives)
                 continue;
             const libconfig::Setting &axis = cones[i].lookup("axis");
             m_scene.addShape(std::make_unique<RayTracer::Cones>(
-                getCoords(position),
-                getMatColour(cones[i]),
+                ParseInformations::getCoords(position),
+                ParseInformations::getMatColour(cones[i]),
                 r,
-                getAxis(axis)));
+                ParseInformations::getAxis(axis)));
         }
     } catch (std::exception &e) {
         return;
@@ -166,9 +115,9 @@ void RayTracer::SceneParser::parseCubes(const libconfig::Setting &primitives)
             if (!(cubes[i].lookupValue("r", r)))
                 continue;
             m_scene.addShape(std::make_unique<RayTracer::Cube>(
-                getCoords(cubes[i]),
+                ParseInformations::getCoords(cubes[i]),
                 r,
-                getMatColour(cubes[i])));
+                ParseInformations::getMatColour(cubes[i])));
         }
     } catch (std::exception &e) {
         return;
@@ -193,8 +142,8 @@ void RayTracer::SceneParser::getPointLight(const libconfig::Setting &list)
 
     for (int i = 0; i < ctr; i++) {
         m_scene.addLight(std::make_unique<RayTracer::PointLight>(
-            getCoords(list[i]),
-            getColour(list[i])));
+            ParseInformations::getCoords(list[i]),
+            ParseInformations::getColour(list[i])));
     }
 }
 
@@ -204,8 +153,8 @@ void RayTracer::SceneParser::getDirectionnalLight(const libconfig::Setting &list
 
     for (int i = 0; i < ctr; i++) {
         m_scene.addLight(std::make_unique<RayTracer::DirectionalLight>(
-            getAxis(list[i]),
-            getColour(list[i])));
+            ParseInformations::getAxis(list[i]),
+            ParseInformations::getColour(list[i])));
     }
 }
 
@@ -218,7 +167,6 @@ void RayTracer::SceneParser::parseLights(const libconfig::Setting &lights)
         const libconfig::Setting &directional_lights = lights.lookup("directional");
         getDirectionnalLight(directional_lights);
     } catch (std::exception &e) {
-        std::cerr << e.what() << std::endl;
         return;
     }
 }

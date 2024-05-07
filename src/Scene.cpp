@@ -9,7 +9,6 @@
 #include "Lights.hpp"
 #include "Shapes/IShape.hpp"
 
-#include <climits>
 #include <memory>
 #include <vector>
 

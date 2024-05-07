@@ -14,6 +14,7 @@
 #include <functional>
 #include <ostream>
 #include <stdexcept>
+#include <type_traits>
 
 namespace Math {
 /// @brief Class used calculs and computations of Matrix of any dimension.

@@ -41,7 +41,7 @@ void Math::Transformation3D::rotateZ(Vector3D &vect, double angle)
     Matrix<4, 4> rotZ{
         cos(angle),  -sin(angle), 0,  0,
         sin(angle),  cos(angle),  0,  0,
-        0,           0,           0,  0,
+        0,           0,           1,  0,
         0,           0,           0,  1
     };
     Vector4D dVect = vect.addRow();

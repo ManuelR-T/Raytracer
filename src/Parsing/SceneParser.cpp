@@ -73,10 +73,8 @@ void RayTracer::SceneParser::parsePlanes(const libconfig::Setting &primitives)
             const libconfig::Setting &position = planes[i].lookup("position");
             const libconfig::Setting &axis = planes[i].lookup("axis");
             vec = ParseInformations::getAxis(axis);
-            Vector3D pos = ParseInformations::getCoords(position);
-            ParseInformations::getTranslation(planes[i], pos);
             m_scene.addShape(std::make_unique<RayTracer::Plane>(
-                pos,
+                ParseInformations::getCoords(position),
                 vec,
                 ParseInformations::getMatColour(planes[i])));
         }
@@ -97,7 +95,7 @@ void RayTracer::SceneParser::parseCones(const libconfig::Setting &primitives)
             if (!(cones[i].lookupValue("r", r)))
                 continue;
             const libconfig::Setting &axis = cones[i].lookup("axis");
-            Vector3D vec = ParseInformations::getCoords(position[i]);
+            Vector3D vec = ParseInformations::getCoords(position);
             ParseInformations::getTranslation(cones[i], vec);
             m_scene.addShape(std::make_unique<RayTracer::Cones>(
                 vec,
@@ -120,8 +118,10 @@ void RayTracer::SceneParser::parseCubes(const libconfig::Setting &primitives)
         for (int i = 0; i < ctr; i++) {
             if (!(cubes[i].lookupValue("r", r)))
                 continue;
+            Vector3D vec = ParseInformations::getCoords(cubes[i]);
+            ParseInformations::getTranslation(cubes[i], vec);
             m_scene.addShape(std::make_unique<RayTracer::Cube>(
-                ParseInformations::getCoords(cubes[i]),
+                vec,
                 r,
                 ParseInformations::getMatColour(cubes[i])));
         }
@@ -132,14 +132,10 @@ void RayTracer::SceneParser::parseCubes(const libconfig::Setting &primitives)
 
 void RayTracer::SceneParser::parsePrimitives(const libconfig::Setting &primitives)
 {
-    int ctr = primitives.getLength();
-
-    for (int i = 0; i < ctr; i++) {
-        parseSphere(primitives);
-        parsePlanes(primitives);
-        parseCones(primitives);
-        parseCubes(primitives);
-    }
+    parseSphere(primitives);
+    parsePlanes(primitives);
+    parseCones(primitives);
+    parseCubes(primitives);
 }
 
 void RayTracer::SceneParser::getPointLight(const libconfig::Setting &list)

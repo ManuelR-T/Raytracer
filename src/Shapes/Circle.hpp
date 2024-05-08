@@ -44,6 +44,15 @@ namespace RayTracer {
             return m_plan.getNormal(pt);
         }
 
+        bool isInCircle(const Point3D &pt) const
+        {
+            auto vect = m_point.getVectorTo(pt);
+
+            if (vect.dot(m_plan.getNormal(pt)) == 0)
+                return true;
+            return true;
+        }
+
     private:
     RayTracer::Plane m_plan;
     Point3D m_point;

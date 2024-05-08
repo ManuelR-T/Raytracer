@@ -9,6 +9,7 @@
 
 #include "ADecoratorShape.hpp"
 #include "AShape.hpp"
+#include "Circle.hpp"
 #include "Plane.hpp"
 
 #include "Matrix/Matrix.hpp"
@@ -53,8 +54,7 @@ namespace RayTracer {
             :
               ADecoratorShape(std::make_unique<Cones>(
                 Cones(center, material, angle, vect, height)))
-            , m_axis(vect)
-            , m_plan(center + vect, vect, Material(Math::RGBA{255, 255, 255}))
+            , m_circle(center + vect, vect, Material(Math::RGBA{255, 255, 255}), height * tan(angle))
         {
         }
 
@@ -66,8 +66,7 @@ namespace RayTracer {
         virtual Material getMaterial() const override;
 
         private:
-        Vector3D m_axis;
-        Plane m_plan;
+        Circle m_circle;
     };
 
 } // namespace RayTracer

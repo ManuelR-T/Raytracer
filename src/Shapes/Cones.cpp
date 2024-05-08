@@ -77,10 +77,18 @@ bool RayTracer::LimitedCones::hits(const Ray &ray, Math::RGBA &hitColor, double 
     if (!this->wrappee->hits(ray, coneColor, tCone))
         return false;
 
-    auto dProd = ray.m_direction.dot(m_axis);
-    if (dProd > 0) {
-        auto b = m_plan.hits(ray, hitColor, t); // Plan doesn't have the right coord
-        return b;
+    Math::RGBA circleColor;
+    double tCircle;
+
+    auto isCircle = m_circle.hits(ray, circleColor, tCircle);
+
+    auto ptToCone = ray.m_origin + tCone * ray.m_direction;
+    auto ptToCircle = ray.m_origin + tCircle * ray.m_direction;
+
+    if (isCircle && ptToCircle.length() < ptToCone.length()) {
+        t = tCircle;
+        hitColor = circleColor;
+        return true;
     }
     t = tCone;
     hitColor = coneColor;
@@ -89,8 +97,8 @@ bool RayTracer::LimitedCones::hits(const Ray &ray, Math::RGBA &hitColor, double 
 
 Vector3D RayTracer::LimitedCones::getNormal(const Point3D &point) const
 {
-    if (m_plan.isPointInPlane(point)) {
-        return m_plan.getNormal(point);
+    if (m_circle.isInCircle(point)) {
+        return m_circle.getNormal(point);
     }
     return wrappee->getNormal(point);
 }

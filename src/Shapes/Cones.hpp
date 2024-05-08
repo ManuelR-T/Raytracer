@@ -20,7 +20,6 @@ public:
         : AShape(center, material)
         , m_vect(vect)
         , m_angle(angle)
-        , m_height(1)
     {
     }
 
@@ -59,6 +58,5 @@ public:
 private:
     Vector3D m_vect;
     double m_angle;
-    double m_height;
 };
 } // namespace RayTracer

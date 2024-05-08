@@ -99,21 +99,26 @@ static void applyLight(
     const Vector3D &viewDir
 )
 {
+    Vector3D normal = (*closestShapeIt)->getNormal(hitPoint);
+
     for (const auto &light : scene.lights) {
         Math::RGBA loopColor = Math::RGBA{0, 0, 0, 1};
         Vector3D lightDir = light->getDirectionToPoint(hitPoint).normalized();
+        double len = light->getDirectionToPoint(hitPoint).length();
 
-        Ray lightRay(hitPoint, lightDir * (-1));
-        double currShapeToLight = lightDir.length();
+        Ray lightRay(hitPoint - normal * 0.1, lightDir * (-1));
         bool isCollision = false;
         for (auto &obj: scene.shapes) {
             if (*closestShapeIt == obj)
                 continue;
             Math::RGBA color;
-            double distance = 0.f;
-            if (obj->hits(lightRay, color, distance) == true && distance < currShapeToLight) {
-                isCollision = true;
-                break;
+            double t = 0.f;
+            if (obj->hits(lightRay, color, t) == true) {
+                Point3D pt = lightRay.m_origin + lightRay.m_direction * t;
+                if (pt.getVectorTo(hitPoint).length() < len) {
+                    isCollision = true;
+                    break;
+                }
             }
         }
         if (isCollision)
@@ -132,7 +137,7 @@ static void applyLight(
                            lightDir,
                            normal,
                            closestShapeIt);
-        finalColor += loopColor * (0.8 * currShapeToLight);
+        finalColor += loopColor * (0.8 * len);
     }
 }
 

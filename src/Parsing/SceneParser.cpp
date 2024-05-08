@@ -105,6 +105,7 @@ void RayTracer::SceneParser::parseSphere(const libconfig::Setting &primitives)
                 getCoords(spheres[i]),
                 r,
                 getMatColour(spheres[i])));
+            std::cout << "Sphere !" << std::endl;
         }
     } catch (std::exception &e) {
         return;
@@ -126,6 +127,7 @@ void RayTracer::SceneParser::parsePlanes(const libconfig::Setting &primitives)
                 getCoords(position),
                 vec,
                 getMatColour(planes[i])));
+            std::cout << "Plane !" << std::endl;
         }
     } catch (std::exception &e) {
         return;
@@ -149,6 +151,7 @@ void RayTracer::SceneParser::parseCones(const libconfig::Setting &primitives)
                 getMatColour(cones[i]),
                 r,
                 getAxis(axis)));
+            std::cout << "Cone !" << std::endl;
         }
     } catch (std::exception &e) {
         return;
@@ -169,6 +172,7 @@ void RayTracer::SceneParser::parseCubes(const libconfig::Setting &primitives)
                 getCoords(cubes[i]),
                 r,
                 getMatColour(cubes[i])));
+            std::cout << "Cube !" << std::endl;
         }
     } catch (std::exception &e) {
         return;
@@ -177,14 +181,14 @@ void RayTracer::SceneParser::parseCubes(const libconfig::Setting &primitives)
 
 void RayTracer::SceneParser::parsePrimitives(const libconfig::Setting &primitives)
 {
-    int ctr = primitives.getLength();
+    // int ctr = primitives.getLength();
 
-    for (int i = 0; i < ctr; i++) {
+    // for (int i = 0; i < ctr; i++) {
         parseSphere(primitives);
         parsePlanes(primitives);
         parseCones(primitives);
         parseCubes(primitives);
-    }
+    // }
 }
 
 void RayTracer::SceneParser::getPointLight(const libconfig::Setting &list)

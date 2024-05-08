@@ -50,8 +50,10 @@ void RayTracer::SceneParser::parseSphere(const libconfig::Setting &primitives)
         for (int i = 0; i < ctr; i++) {
             if (!spheres[i].lookupValue("r", r))
                 continue;
+            Vector3D vec = ParseInformations::getCoords(spheres[i]);
+            ParseInformations::getTranslation(spheres[i], vec);
             m_scene.addShape(std::make_unique<RayTracer::Sphere>(
-                ParseInformations::getCoords(spheres[i]),
+                vec,
                 r,
                 ParseInformations::getMatColour(spheres[i])));
         }
@@ -71,8 +73,10 @@ void RayTracer::SceneParser::parsePlanes(const libconfig::Setting &primitives)
             const libconfig::Setting &position = planes[i].lookup("position");
             const libconfig::Setting &axis = planes[i].lookup("axis");
             vec = ParseInformations::getAxis(axis);
+            Vector3D pos = ParseInformations::getCoords(position);
+            ParseInformations::getTranslation(planes[i], pos);
             m_scene.addShape(std::make_unique<RayTracer::Plane>(
-                ParseInformations::getCoords(position),
+                pos,
                 vec,
                 ParseInformations::getMatColour(planes[i])));
         }
@@ -93,8 +97,10 @@ void RayTracer::SceneParser::parseCones(const libconfig::Setting &primitives)
             if (!(cones[i].lookupValue("r", r)))
                 continue;
             const libconfig::Setting &axis = cones[i].lookup("axis");
+            Vector3D vec = ParseInformations::getCoords(position[i]);
+            ParseInformations::getTranslation(cones[i], vec);
             m_scene.addShape(std::make_unique<RayTracer::Cones>(
-                ParseInformations::getCoords(position),
+                vec,
                 ParseInformations::getMatColour(cones[i]),
                 r,
                 ParseInformations::getAxis(axis)));

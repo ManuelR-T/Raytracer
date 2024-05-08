@@ -102,37 +102,38 @@ static void applyLight(
     for (const auto &light : scene.lights) {
         Math::RGBA loopColor = Math::RGBA{0, 0, 0, 1};
         Vector3D lightDir = light->getDirectionToPoint(hitPoint).normalized();
+        double epsilon = 1e-6; // Small offset value to prevent shadow acne
+        Point3D offsetHitPoint = hitPoint - lightDir * epsilon;
+        Ray lightRay(offsetHitPoint, lightDir  * -1);
+        double lightDistance = light->getLenght(hitPoint) - lightDir.length();
+        bool inShadow = false;
 
-        Ray lightRay(hitPoint, lightDir * (-1));
-        double currShapeToLight = lightDir.length();
-        bool isCollision = false;
-        for (auto &obj: scene.shapes) {
-            if (*closestShapeIt == obj)
+        for (const auto &shape : scene.shapes) {
+            if (shape == *closestShapeIt)
                 continue;
-            Math::RGBA color;
-            double distance = 0.f;
-            if (obj->hits(lightRay, color, distance) == true && distance < currShapeToLight) {
-                isCollision = true;
+            double dist;
+            Math::RGBA tmpColor;
+            if (shape->hits(lightRay, tmpColor, dist) && dist < lightDistance) {
+                inShadow = true;
                 break;
             }
         }
-        if (isCollision)
+        if (inShadow)
             continue;
-
         Math::RGBA lightColor = light->getIntensityAt(hitPoint);
         Vector3D normal = (*closestShapeIt)->getNormal(hitPoint) * -1;
-        double dot = std::max(lightDir.dot(normal), 0.0);
+        double dot = std::max((lightDir).dot(normal), 0.0);
 
         if (dot > 0)
             applyDiffuseLight(loopColor, closestColor, lightColor, dot);
         applySpecularLight(loopColor,
-                           lightColor,
-                           dot,
-                           viewDir,
-                           lightDir,
-                           normal,
-                           closestShapeIt);
-        finalColor += loopColor * (0.8 * currShapeToLight);
+                            lightColor,
+                            dot,
+                            viewDir,
+                            lightDir,
+                            normal,
+                            closestShapeIt);
+        finalColor += loopColor;
     }
 }
 

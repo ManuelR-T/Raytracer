@@ -9,6 +9,7 @@
 
 #include "RGBA.hpp"
 #include "Matrix/Matrix.hpp"
+#include <cmath>
 
 namespace RayTracer {
 
@@ -18,6 +19,7 @@ public:
 
     virtual Math::RGBA getIntensityAt(const Point3D& point) const = 0;
     virtual Vector3D getDirectionToPoint(const Point3D& point) const = 0;
+    virtual double getLenght(const Point3D& point) const = 0;
 };
 
 class DirectionalLight : public ILight {
@@ -35,22 +37,33 @@ public:
     virtual Vector3D getDirectionToPoint(const Point3D &) const override {
         return direction * -1;
     }
+
+    virtual double getLenght(const Point3D &) const override {
+        return std::numeric_limits<double>::infinity();
+    }
 };
 
 class PointLight : public ILight {
 public:
-    Point3D position;
+    Point3D pos;
     Math::RGBA intensity;
+    double attenuationFactor;
 
-    PointLight(const Point3D& pos, const Math::RGBA& intens = Math::RGBA{1, 1, 1})
-        : position(pos), intensity(intens) {}
+    PointLight(const Point3D& pos, const Math::RGBA& intensity = Math::RGBA{1, 1, 1}, double attenuationFactor = 1.25)
+        : pos(pos), intensity(intensity), attenuationFactor(attenuationFactor) {}
 
-    virtual Math::RGBA getIntensityAt(const Point3D &) const override {
-        return intensity;
+    virtual Math::RGBA getIntensityAt(const Point3D& point) const override {
+        double distance = pos.getVectorTo(point).length();
+        double attenuation = distance / std::pow(distance, attenuationFactor);
+        return intensity * attenuation;
     }
 
     virtual Vector3D getDirectionToPoint(const Point3D& point) const override {
-        return position.getVectorTo(point).normalized();
+        return pos.getVectorTo(point).normalized();
+    }
+
+    virtual double getLenght(const Point3D& point) const override {
+        return pos.getVectorTo(point).length();
     }
 };
 

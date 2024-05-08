@@ -51,6 +51,7 @@ void RayTracer::SceneParser::parseSphere(const libconfig::Setting &primitives)
             if (!spheres[i].lookupValue("r", r))
                 continue;
             Vector3D vec = ParseInformations::getCoords(spheres[i]);
+            ParseInformations::getRotation(spheres[i], vec);
             ParseInformations::getTranslation(spheres[i], vec);
             m_scene.addShape(std::make_unique<RayTracer::Sphere>(
                 vec,
@@ -73,6 +74,9 @@ void RayTracer::SceneParser::parsePlanes(const libconfig::Setting &primitives)
             const libconfig::Setting &position = planes[i].lookup("position");
             const libconfig::Setting &axis = planes[i].lookup("axis");
             vec = ParseInformations::getAxis(axis);
+            Vector3D pos = ParseInformations::getCoords(position);
+            ParseInformations::getRotation(planes[i], vec);
+            ParseInformations::getTranslation(planes[i], pos);
             m_scene.addShape(std::make_unique<RayTracer::Plane>(
                 ParseInformations::getCoords(position),
                 vec,
@@ -95,13 +99,15 @@ void RayTracer::SceneParser::parseCones(const libconfig::Setting &primitives)
             if (!(cones[i].lookupValue("r", r)))
                 continue;
             const libconfig::Setting &axis = cones[i].lookup("axis");
-            Vector3D vec = ParseInformations::getCoords(position);
-            ParseInformations::getTranslation(cones[i], vec);
+            Vector3D pos = ParseInformations::getCoords(position);
+            Vector3D vec = ParseInformations::getAxis(axis);
+            ParseInformations::getRotation(cones[i], vec);
+            ParseInformations::getTranslation(cones[i], pos);
             m_scene.addShape(std::make_unique<RayTracer::Cones>(
-                vec,
+                pos,
                 ParseInformations::getMatColour(cones[i]),
                 r,
-                ParseInformations::getAxis(axis)));
+                vec));
         }
     } catch (std::exception &e) {
         return;
@@ -116,13 +122,18 @@ void RayTracer::SceneParser::parseCubes(const libconfig::Setting &primitives)
         const int ctr = cubes.getLength();
 
         for (int i = 0; i < ctr; i++) {
+            const libconfig::Setting &position = cubes[i].lookup("position");
             if (!(cubes[i].lookupValue("r", r)))
                 continue;
-            Vector3D vec = ParseInformations::getCoords(cubes[i]);
-            ParseInformations::getTranslation(cubes[i], vec);
+            const libconfig::Setting &axis = cubes[i].lookup("axis");
+            Vector3D pos = ParseInformations::getCoords(position);
+            Vector3D vec = ParseInformations::getAxis(axis);
+            ParseInformations::getRotation(cubes[i], vec);
+            ParseInformations::getTranslation(cubes[i], pos);
             m_scene.addShape(std::make_unique<RayTracer::Cube>(
-                vec,
+                pos,
                 r,
+                vec,
                 ParseInformations::getMatColour(cubes[i])));
         }
     } catch (std::exception &e) {

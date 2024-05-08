@@ -12,10 +12,10 @@
 #include <libconfig.h++>
 
 const std::unordered_map<std::string, std::function<std::unique_ptr<RayTracer::IShape>(const libconfig::Setting &)>> RayTracer::Factory::m_FACTORY = {
-        {"Sphere", [] (const libconfig::Setting &item) {return createSphere(item); }},
-        {"Plane", [] (const libconfig::Setting &item) {return createPlane(item); }},
-        {"Cube", [] (const libconfig::Setting &item) {return createCube(item);}},
-        {"Cone", [] (const libconfig::Setting &item) {return createCone(item);}}
+        {"spheres", [] (const libconfig::Setting &item) {return createSphere(item); }},
+        {"planes", [] (const libconfig::Setting &item) {return createPlane(item); }},
+        {"cubes", [] (const libconfig::Setting &item) {return createCube(item);}},
+        {"cones", [] (const libconfig::Setting &item) {return createCone(item);}}
 };
 
 std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCube(const libconfig::Setting &item)

@@ -24,6 +24,7 @@ namespace RayTracer {
             void parseCamera(const libconfig::Setting &);
             void parsePrimitives(const libconfig::Setting &);
             void parseLights(const libconfig::Setting &);
+            void parseItem(const libconfig::Setting &, const std::string &);
             void parsePlanes(const libconfig::Setting &);
             void parseSphere(const libconfig::Setting &);
             void parseCubes(const libconfig::Setting &);

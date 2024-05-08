@@ -39,56 +39,14 @@ void RayTracer::SceneParser::parseCamera(const libconfig::Setting &camera)
     m_scene.setCamera(cam);
 }
 
-void RayTracer::SceneParser::parseSphere(const libconfig::Setting &primitives)
+void RayTracer::SceneParser::parseItem(const libconfig::Setting &primitives, const std::string &str)
 {
     try {
-        const libconfig::Setting &spheres = primitives.lookup("spheres");
-        const int ctr = spheres.getLength();
+        const libconfig::Setting &item = primitives.lookup(str);
+        const int ctr = item.getLength();
 
         for (int i = 0; i < ctr; i++) {
-            m_scene.addShape(Factory::createShape(spheres[i], "Sphere"));
-        }
-    } catch (std::exception &e) {
-        return;
-    }
-}
-
-void RayTracer::SceneParser::parsePlanes(const libconfig::Setting &primitives)
-{
-    try {
-        const libconfig::Setting &planes = primitives.lookup("planes");
-        const int ctr = planes.getLength();
-
-        for (int i = 0; i < ctr; i++) {
-            m_scene.addShape(Factory::createShape(planes[i], "Plane"));
-        }
-    } catch (std::exception &e) {
-        return;
-    }
-}
-
-void RayTracer::SceneParser::parseCones(const libconfig::Setting &primitives)
-{
-    try {
-        const libconfig::Setting &cones = primitives.lookup("cones");
-        const int ctr = cones.getLength();
-
-        for (int i = 0; i < ctr; i++) {
-            m_scene.addShape(Factory::createShape(cones[i], "Cone"));
-        }
-    } catch (std::exception &e) {
-        return;
-    }
-}
-
-void RayTracer::SceneParser::parseCubes(const libconfig::Setting &primitives)
-{
-    try {
-        const libconfig::Setting &cubes = primitives.lookup("cubes");
-        int ctr = cubes.getLength();
-
-        for (int i = 0; i < ctr; i++) {
-            m_scene.addShape(Factory::createShape(cubes[i], "Cube"));
+            m_scene.addShape(Factory::createShape(item[i], str));
         }
     } catch (std::exception &e) {
         return;
@@ -97,10 +55,10 @@ void RayTracer::SceneParser::parseCubes(const libconfig::Setting &primitives)
 
 void RayTracer::SceneParser::parsePrimitives(const libconfig::Setting &primitives)
 {
-    parseSphere(primitives);
-    parsePlanes(primitives);
-    parseCones(primitives);
-    parseCubes(primitives);
+    parseItem(primitives, "spheres");
+    parseItem(primitives, "cones");
+    parseItem(primitives, "planes");
+    parseItem(primitives, "cubes");
 }
 
 void RayTracer::SceneParser::getPointLight(const libconfig::Setting &list)

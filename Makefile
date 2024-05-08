@@ -17,6 +17,7 @@ SRC =	 $(addsuffix .cpp, 				\
 				$(addprefix Shapes/, 	\
 					AShape				\
 					Cube				\
+					Cones 	\
 				)	\
 			)	\
 		)

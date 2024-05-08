@@ -137,18 +137,22 @@ void RayTracer::SceneParser::parseCones(const libconfig::Setting &primitives)
     try {
         const libconfig::Setting &cones = primitives.lookup("cones");
         double r;
+        double height;
         const int ctr = cones.getLength();
 
         for (int i = 0; i < ctr; i++) {
             const libconfig::Setting &position = cones[i].lookup("position");
             if (!(cones[i].lookupValue("r", r)))
                 continue;
+            if (!(cones[i].lookupValue("height", height)))
+                continue;
             const libconfig::Setting &axis = cones[i].lookup("axis");
-            m_scene.addShape(std::make_unique<RayTracer::Cones>(
+            m_scene.addShape(std::make_unique<RayTracer::LimitedCones>(
                 getCoords(position),
                 getMatColour(cones[i]),
                 r,
-                getAxis(axis)));
+                getAxis(axis),
+                height));
         }
     } catch (std::exception &e) {
         return;
@@ -177,14 +181,14 @@ void RayTracer::SceneParser::parseCubes(const libconfig::Setting &primitives)
 
 void RayTracer::SceneParser::parsePrimitives(const libconfig::Setting &primitives)
 {
-    int ctr = primitives.getLength();
+    // int ctr = primitives.getLength();
 
-    for (int i = 0; i < ctr; i++) {
+    // for (int i = 0; i < ctr; i++) {
         parseSphere(primitives);
         parsePlanes(primitives);
         parseCones(primitives);
         parseCubes(primitives);
-    }
+    // }
 }
 
 void RayTracer::SceneParser::getPointLight(const libconfig::Setting &list)

@@ -116,8 +116,8 @@ static void applyLight(
                 break;
             }
         }
-        if (isCollision)
-            continue;
+        // if (isCollision)
+        //     continue;
 
         Math::RGBA lightColor = light->getIntensityAt(hitPoint);
         Vector3D normal = (*closestShapeIt)->getNormal(hitPoint) * -1;

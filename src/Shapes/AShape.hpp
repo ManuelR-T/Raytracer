@@ -26,6 +26,10 @@ namespace RayTracer
         protected:
         bool discriminant(double a, double b, double c, double &t) const;
 
+        bool isRootValid(std::tuple<double, double> &roots) const;
+
+        std::tuple<double, double> discriminant(double a, double b, double c)  const;
+
         Point3D m_point;
         Material m_material;
     };

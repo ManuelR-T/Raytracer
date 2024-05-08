@@ -8,7 +8,6 @@
 #pragma once
 #include "../Materials/Materials.hpp"
 #include "Matrix/Matrix.hpp"
-#include <array>
 #include <libconfig.h++>
 
 namespace RayTracer {

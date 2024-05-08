@@ -9,10 +9,9 @@
 #include "../Exception.hpp"
 #include "../Camera.hpp"
 #include "../Lights.hpp"
-#include "../Parsing/SceneParser.hpp"
 #include "Matrix/Matrix.hpp"
 #include "ParseInformations.hpp"
-#include "../Shapes/Shapes.hpp"
+#include "Factory.hpp"
 
 #include <array>
 #include <exception>
@@ -44,19 +43,10 @@ void RayTracer::SceneParser::parseSphere(const libconfig::Setting &primitives)
 {
     try {
         const libconfig::Setting &spheres = primitives.lookup("spheres");
-        double r;
         const int ctr = spheres.getLength();
 
         for (int i = 0; i < ctr; i++) {
-            if (!spheres[i].lookupValue("r", r))
-                continue;
-            Vector3D vec = ParseInformations::getCoords(spheres[i]);
-            ParseInformations::getRotation(spheres[i], vec);
-            ParseInformations::getTranslation(spheres[i], vec);
-            m_scene.addShape(std::make_unique<RayTracer::Sphere>(
-                vec,
-                r,
-                ParseInformations::getMatColour(spheres[i])));
+            m_scene.addShape(Factory::createShape(spheres[i], "Sphere"));
         }
     } catch (std::exception &e) {
         return;
@@ -67,20 +57,10 @@ void RayTracer::SceneParser::parsePlanes(const libconfig::Setting &primitives)
 {
     try {
         const libconfig::Setting &planes = primitives.lookup("planes");
-        Vector3D vec;
         const int ctr = planes.getLength();
 
         for (int i = 0; i < ctr; i++) {
-            const libconfig::Setting &position = planes[i].lookup("position");
-            const libconfig::Setting &axis = planes[i].lookup("axis");
-            vec = ParseInformations::getAxis(axis);
-            Vector3D pos = ParseInformations::getCoords(position);
-            ParseInformations::getRotation(planes[i], vec);
-            ParseInformations::getTranslation(planes[i], pos);
-            m_scene.addShape(std::make_unique<RayTracer::Plane>(
-                ParseInformations::getCoords(position),
-                vec,
-                ParseInformations::getMatColour(planes[i])));
+            m_scene.addShape(Factory::createShape(planes[i], "Plane"));
         }
     } catch (std::exception &e) {
         return;
@@ -91,23 +71,10 @@ void RayTracer::SceneParser::parseCones(const libconfig::Setting &primitives)
 {
     try {
         const libconfig::Setting &cones = primitives.lookup("cones");
-        double r;
         const int ctr = cones.getLength();
 
         for (int i = 0; i < ctr; i++) {
-            const libconfig::Setting &position = cones[i].lookup("position");
-            if (!(cones[i].lookupValue("r", r)))
-                continue;
-            const libconfig::Setting &axis = cones[i].lookup("axis");
-            Vector3D pos = ParseInformations::getCoords(position);
-            Vector3D vec = ParseInformations::getAxis(axis);
-            ParseInformations::getRotation(cones[i], vec);
-            ParseInformations::getTranslation(cones[i], pos);
-            m_scene.addShape(std::make_unique<RayTracer::Cones>(
-                pos,
-                ParseInformations::getMatColour(cones[i]),
-                r,
-                vec));
+            m_scene.addShape(Factory::createShape(cones[i], "Cone"));
         }
     } catch (std::exception &e) {
         return;
@@ -118,23 +85,10 @@ void RayTracer::SceneParser::parseCubes(const libconfig::Setting &primitives)
 {
     try {
         const libconfig::Setting &cubes = primitives.lookup("cubes");
-        double r;
-        const int ctr = cubes.getLength();
+        int ctr = cubes.getLength();
 
         for (int i = 0; i < ctr; i++) {
-            const libconfig::Setting &position = cubes[i].lookup("position");
-            if (!(cubes[i].lookupValue("r", r)))
-                continue;
-            const libconfig::Setting &axis = cubes[i].lookup("axis");
-            Vector3D pos = ParseInformations::getCoords(position);
-            Vector3D vec = ParseInformations::getAxis(axis);
-            ParseInformations::getRotation(cubes[i], vec);
-            ParseInformations::getTranslation(cubes[i], pos);
-            m_scene.addShape(std::make_unique<RayTracer::Cube>(
-                pos,
-                r,
-                vec,
-                ParseInformations::getMatColour(cubes[i])));
+            m_scene.addShape(Factory::createShape(cubes[i], "Cube"));
         }
     } catch (std::exception &e) {
         return;

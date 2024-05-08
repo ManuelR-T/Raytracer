@@ -7,10 +7,8 @@
 
 #pragma once
 #include "../Scene.hpp"
-#include "Matrix/Matrix.hpp"
-#include <array>
+#include "../Shapes/Shapes.hpp"
 #include <libconfig.h++>
-#include <string>
 
 namespace RayTracer {
 
@@ -26,10 +24,10 @@ namespace RayTracer {
             void parseCamera(const libconfig::Setting &);
             void parsePrimitives(const libconfig::Setting &);
             void parseLights(const libconfig::Setting &);
-            void parseSphere(const libconfig::Setting &);
             void parsePlanes(const libconfig::Setting &);
-            void parseCones(const libconfig::Setting &);
+            void parseSphere(const libconfig::Setting &);
             void parseCubes(const libconfig::Setting &);
+            void parseCones(const libconfig::Setting &);
 
             RayTracer::Scene &m_scene;
     };

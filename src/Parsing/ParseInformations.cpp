@@ -10,9 +10,7 @@
 #include "Matrix/Matrix.hpp"
 #include "../Transformations/Transformation.hpp"
 
-#include <array>
 #include <exception>
-#include <libconfig.h++>
 
 Math::RGBA RayTracer::ParseInformations::getColour(const libconfig::Setting &list)
 {

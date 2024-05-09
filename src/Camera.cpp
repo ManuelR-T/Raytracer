@@ -118,8 +118,8 @@ static void applyLight(
                 break;
             }
         }
-        // if (inShadow)
-            // continue;
+        if (inShadow)
+            continue;
         Math::RGBA lightColor = light->getIntensityAt(hitPoint);
         Vector3D normal = (*closestShapeIt)->getNormal(hitPoint) * -1;
         double dot = std::max((lightDir).dot(normal), 0.0);

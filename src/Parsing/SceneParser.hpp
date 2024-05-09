@@ -8,6 +8,7 @@
 #pragma once
 #include "../Scene.hpp"
 #include "../Shapes/Shapes.hpp"
+#include "Matrix/Matrix.hpp"
 #include <libconfig.h++>
 
 namespace RayTracer {
@@ -15,10 +16,11 @@ namespace RayTracer {
     class SceneParser {
         public:
             SceneParser() = delete;
-            SceneParser(RayTracer::Scene &);
+            SceneParser(RayTracer::Scene &, Vector3D &);
             ~SceneParser() = default;
-            RayTracer::Scene &parseScene(const std::string &file);
+            RayTracer::Scene &parseScene(const std::string &file, const bool imported);
         private:
+            void getScene(const libconfig::Setting &scene);
             void getPointLight(const libconfig::Setting &list);
             void getDirectionnalLight(const libconfig::Setting &list);
             void parseCamera(const libconfig::Setting &);
@@ -31,5 +33,6 @@ namespace RayTracer {
             void parseCones(const libconfig::Setting &);
 
             RayTracer::Scene &m_scene;
+            Vector3D &m_offset;
     };
 }

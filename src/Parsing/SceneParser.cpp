@@ -15,11 +15,10 @@
 
 #include <array>
 #include <exception>
-#include <iostream>
 #include <libconfig.h++>
 #include <memory>
 
-RayTracer::SceneParser::SceneParser(RayTracer::Scene &scene) : m_scene(scene)
+RayTracer::SceneParser::SceneParser(RayTracer::Scene &scene, Vector3D &vec) : m_scene(scene), m_offset(vec)
 {
 }
 
@@ -46,7 +45,7 @@ void RayTracer::SceneParser::parseItem(const libconfig::Setting &primitives, con
         const int ctr = item.getLength();
 
         for (int i = 0; i < ctr; i++) {
-            m_scene.addShape(Factory::createShape(item[i], str));
+            m_scene.addShape(Factory::createShape(item[i], str, m_offset));
         }
     } catch (std::exception &e) {
         return;
@@ -67,7 +66,7 @@ void RayTracer::SceneParser::getPointLight(const libconfig::Setting &list)
 
     for (int i = 0; i < ctr; i++) {
         m_scene.addLight(std::make_unique<RayTracer::PointLight>(
-            ParseInformations::getCoords(list[i]),
+            ParseInformations::getCoords(list[i]) + m_offset,
             ParseInformations::getColour(list[i])));
     }
 }
@@ -78,7 +77,7 @@ void RayTracer::SceneParser::getDirectionnalLight(const libconfig::Setting &list
 
     for (int i = 0; i < ctr; i++) {
         m_scene.addLight(std::make_unique<RayTracer::DirectionalLight>(
-            ParseInformations::getAxis(list[i]),
+            ParseInformations::getAxis(list[i]) + m_offset,
             ParseInformations::getColour(list[i])));
     }
 }
@@ -96,27 +95,50 @@ void RayTracer::SceneParser::parseLights(const libconfig::Setting &lights)
     }
 }
 
-RayTracer::Scene &RayTracer::SceneParser::parseScene(const std::string &filename)
+void RayTracer::SceneParser::getScene(const libconfig::Setting &scene)
+{
+    try {
+        std::string file;
+        std::array<double, 3> pos;
+
+        if (!scene.lookupValue("filename", file))
+            throw RayTracer::ParsingValueNotFound();
+        const libconfig::Setting &off = scene.lookup("offset");
+        if(!(off.lookupValue("x", pos[0])
+        && off.lookupValue("y", pos[1])
+        && off.lookupValue("z", pos[2])))
+            throw RayTracer::ParsingValueNotFound();
+        m_offset = Vector3D{pos[0], pos[1], pos[2]};
+        parseScene(file, true);
+    } catch (std::exception &e) {
+        return;
+    }
+}
+
+RayTracer::Scene &RayTracer::SceneParser::parseScene(const std::string &filename, const bool imported)
 {
     libconfig::Config conf;
 
     try {
         conf.readFile(filename.c_str());
         const libconfig::Setting &root = conf.getRoot();
-        const libconfig::Setting &camera = root.lookup("camera");
+        if (!imported) {
+            const libconfig::Setting &camera = root.lookup("camera");
 
-        if (!(camera[0].lookupValue("width", m_scene.width)
-            && camera[0].lookupValue("height", m_scene.height)
-            && camera.lookupValue("fieldOfView", m_scene.fov)))
-            throw RayTracer::ParsingValueNotFound();
-        parseCamera(camera);
+            if (!(camera[0].lookupValue("width", m_scene.width)
+                && camera[0].lookupValue("height", m_scene.height)
+                && camera.lookupValue("fieldOfView", m_scene.fov)))
+                throw RayTracer::ParsingValueNotFound();
+            parseCamera(camera);
+        }
         const libconfig::Setting &primitives = root.lookup("primitives");
         parsePrimitives(primitives);
         const libconfig::Setting &lights = root.lookup("lights");
         parseLights(lights);
+        const libconfig::Setting &scene = root.lookup("scene");
+        getScene(scene);
         return m_scene;
     } catch (std::exception &e) {
-        std::cout << e.what() << std::endl;
         return m_scene;
     }
 }

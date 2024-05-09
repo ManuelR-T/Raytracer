@@ -31,7 +31,7 @@ NAME = raytracer
 
 CXX = g++
 CFLAGS = -W -Wall -Wextra -lconfig++
-CPPFLAGS = -iquote./src -iquote./include -iquote./libs -std=c++20
+CPPFLAGS = -iquote./include -iquote./libs -std=c++20
 
 all: $(NAME)
 

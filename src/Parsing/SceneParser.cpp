@@ -25,7 +25,7 @@ RayTracer::SceneParser::SceneParser(RayTracer::Scene &scene, Vector3D &vec) : m_
 void RayTracer::SceneParser::parseCamera(const libconfig::Setting &camera)
 {
     const libconfig::Setting &position = camera[1];
-    std::array<double, 3> pos;
+    std::array<double, 3> pos{0, 0, 0};
 
     if(!(position.lookupValue("x", pos[0])
         && position.lookupValue("y", pos[1])

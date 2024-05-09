@@ -9,7 +9,6 @@
 #include "Parsing/SceneParser.hpp"
 #include "Scene.hpp"
 #include "define.hpp"
-#include "Shapes/Shapes.hpp"
 
 #include <exception>
 #include <fstream>

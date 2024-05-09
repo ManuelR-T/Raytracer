@@ -10,9 +10,6 @@
 #include "Matrix/Matrix.hpp"
 #include "../Transformations/Transformation.hpp"
 
-#include <cstdio>
-#include <exception>
-
 Math::RGBA RayTracer::ParseInformations::getColour(const libconfig::Setting &list)
 {
     const libconfig::Setting &colours = list.lookup("color");
@@ -68,7 +65,7 @@ Vector3D RayTracer::ParseInformations::getAxis(const libconfig::Setting &list)
 
 void RayTracer::ParseInformations::getRotation(const libconfig::Setting &item, Vector3D &pos)
 {
-    std::array<double, 3>angles = {0};
+    std::array<double, 3>angles = {0, 0, 0};
     try {
         const libconfig::Setting &rotation = item.lookup("rotation");
 

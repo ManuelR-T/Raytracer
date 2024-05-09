@@ -10,7 +10,6 @@
 #include "ADecoratorShape.hpp"
 #include "AShape.hpp"
 #include "Circle.hpp"
-#include "Plane.hpp"
 
 #include "Matrix/Matrix.hpp"
 #include "RGBA.hpp"

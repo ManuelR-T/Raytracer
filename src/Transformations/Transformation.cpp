@@ -8,7 +8,6 @@
 #include "Transformation.hpp"
 
 #include <cmath>
-#include <iostream>
 
 void Math::Transformation3D::rotateX(Vector3D &vect, double angle)
 {

@@ -6,7 +6,7 @@
 */
 
 #include "SceneParser.hpp"
-#include "../Exception.hpp"
+#include "../Error/Exception.hpp"
 #include "../Camera.hpp"
 #include "../Lights.hpp"
 #include "Matrix/Matrix.hpp"
@@ -30,7 +30,7 @@ void RayTracer::SceneParser::parseCamera(const libconfig::Setting &camera)
     if(!(position.lookupValue("x", pos[0])
         && position.lookupValue("y", pos[1])
         && position.lookupValue("z", pos[2])))
-        throw RayTracer::ParsingValueNotFound();
+        throw Error::ParsingValueNotFound("");
     Vector3D vec = Vector3D{pos[0], pos[1], pos[2]};
     RayTracer::Camera cam(vec);
     ParseInformations::getRotation(camera, cam.direction);
@@ -102,12 +102,12 @@ void RayTracer::SceneParser::getScene(const libconfig::Setting &scene)
         std::array<double, 3> pos;
 
         if (!scene.lookupValue("filename", file))
-            throw RayTracer::ParsingValueNotFound();
+            throw Error::ParsingValueNotFound("");
         const libconfig::Setting &off = scene.lookup("offset");
         if(!(off.lookupValue("x", pos[0])
         && off.lookupValue("y", pos[1])
         && off.lookupValue("z", pos[2])))
-            throw RayTracer::ParsingValueNotFound();
+            throw Error::ParsingValueNotFound("");
         m_offset = Vector3D{pos[0], pos[1], pos[2]};
         parseScene(file, true);
     } catch (std::exception &e) {
@@ -128,7 +128,7 @@ RayTracer::Scene &RayTracer::SceneParser::parseScene(const std::string &filename
             if (!(camera[0].lookupValue("width", m_scene.width)
                 && camera[0].lookupValue("height", m_scene.height)
                 && camera.lookupValue("fieldOfView", m_scene.fov)))
-                throw RayTracer::ParsingValueNotFound();
+                throw Error::ParsingValueNotFound("Missing mandatory values for scene.");
             parseCamera(camera);
         }
         const libconfig::Setting &primitives = root.lookup("primitives");

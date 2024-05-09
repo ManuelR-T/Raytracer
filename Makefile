@@ -11,7 +11,8 @@ SRC =	 $(addsuffix .cpp, 				\
 					Factory				\
 					ParseInformations	\
 					SceneParser)		\
-				Exception				\
+				$(addprefix Error/, 	\
+					Exception) 			\
 				Scene					\
 				Camera					\
 				main					\
@@ -30,7 +31,7 @@ NAME = raytracer
 
 CXX = g++
 CFLAGS = -W -Wall -Wextra -lconfig++
-CPPFLAGS = -iquote./include -iquote./libs -std=c++20
+CPPFLAGS = -iquote./src -iquote./include -iquote./libs -std=c++20
 
 all: $(NAME)
 

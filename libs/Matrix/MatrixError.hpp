@@ -4,3 +4,9 @@
 ** File description:
 ** MatrixError
 */
+
+#include "Error/Error.hpp"
+
+namespace Error {
+
+}

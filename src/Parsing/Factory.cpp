@@ -6,7 +6,7 @@
 */
 
 #include "Factory.hpp"
-#include "../Exception.hpp"
+#include "../Error/Exception.hpp"
 #include "Matrix/Matrix.hpp"
 #include "ParseInformations.hpp"
 
@@ -27,7 +27,7 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCube(const libconfi
         const libconfig::Setting &axis = item.lookup("axis");
 
         if (!(item.lookupValue("r", r)))
-            throw RayTracer::ParsingValueNotFound();
+            throw Error::ParsingValueNotFound("");
         Vector3D pos = ParseInformations::getCoords(position) + offset;
         Vector3D vec = ParseInformations::getAxis(axis);
         ParseInformations::getRotation(item, vec);
@@ -51,9 +51,9 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCone(const libconfi
         const libconfig::Setting &axis = item.lookup("axis");
 
         if (!(item.lookupValue("r", r)))
-            throw RayTracer::ParsingValueNotFound();
+            throw Error::ParsingValueNotFound("");
         if (!(item.lookupValue("height", height)))
-            throw RayTracer::ParsingValueNotFound();
+            throw Error::ParsingValueNotFound("");
         Vector3D pos = ParseInformations::getCoords(position) + offset;
         Vector3D vec = ParseInformations::getAxis(axis);
         ParseInformations::getRotation(item, vec);
@@ -94,7 +94,7 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createSphere(const libcon
     try {
         double r;
         if (!item.lookupValue("r", r))
-            throw RayTracer::ParsingValueNotFound();
+            throw Error::ParsingValueNotFound("");
         Vector3D vec = ParseInformations::getCoords(item) + offset;
         ParseInformations::getRotation(item, vec);
         ParseInformations::getTranslation(item, vec);

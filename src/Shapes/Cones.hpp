@@ -7,58 +7,66 @@
 
 #pragma once
 
+#include "ADecoratorShape.hpp"
 #include "AShape.hpp"
+#include "Circle.hpp"
+#include "Plane.hpp"
+
 #include "Matrix/Matrix.hpp"
+#include "RGBA.hpp"
+#include <memory>
 
 namespace RayTracer {
-class Cones : public AShape {
-public:
-    Cones(const Point3D &center,
-          const Material &material,
-          double angle,
-          const Vector3D &vect)
-        : AShape(center, material)
-        , m_vect(vect)
-        , m_angle(angle)
-        , m_height(1)
-    {
-    }
-
-    virtual bool
-    hits(const Ray &ray, Math::RGBA &hitColor, double &t) const override
-    {
-        double dot_ray_vect = ray.m_direction.dot(m_vect);
-        Vector3D ptToRay = m_point.getVectorTo(ray.m_origin);
-        double cosPow = std::pow(cos(m_angle), 2);
-
-        double a = std::pow(dot_ray_vect, 2) - cosPow;
-        double b = 2 * (dot_ray_vect * (ptToRay.dot(m_vect)) -
-                        (ray.m_direction.dot(ptToRay)) * cosPow);
-        double c = ((ptToRay.dot(m_vect)) * (ptToRay.dot(m_vect))) -
-                   ptToRay.dot(ptToRay) * cosPow;
-
-        if (discriminant(a, b, c, t)) {
-            hitColor = m_material.color;
-            auto pt = ray.m_origin + ray.m_direction * t;
-            if (m_angle < M_PI_2 && (pt - this->m_point).dot(this->m_vect) > 0)
-                return true;
-            return false;
+    class Cones : public AShape {
+    public:
+        Cones(const Point3D &center,
+              const Material &material,
+              double angle,
+              const Vector3D &vect,
+              double height)
+            : AShape(center, material)
+            , m_vect(vect)
+            , m_angle(angle)
+            , m_height(height)
+        {
         }
-        return false;
-    }
 
-    virtual Vector3D getNormal(const Point3D &pt) const override
-    {
-        Vector3D axis = m_vect.normalized();
-        Vector3D ptToCenter = pt - m_point;
-        double height = ptToCenter.dot(axis);
-        Vector3D normal = ptToCenter - axis * height;
-        return normal.normalized();
-    }
+        virtual bool
+        hits(const Ray &ray, Math::RGBA &hitColor, double &t) const override;
 
-private:
-    Vector3D m_vect;
-    double m_angle;
-    double m_height;
-};
+        virtual Vector3D getNormal(const Point3D &pt) const override;
+
+    private:
+        bool pointInConeValid(const Point3D &pt) const;
+
+        Vector3D m_vect;
+        double m_angle;
+        double m_height;
+    };
+
+    class LimitedCones : public ADecoratorShape {
+    public:
+        LimitedCones(const Point3D &center,
+              const Material &material,
+              double angle,
+              const Vector3D &vect,
+              double height)
+            :
+              ADecoratorShape(std::make_unique<Cones>(
+                Cones(center, material, angle, vect, height)))
+            , m_circle(center + vect, vect, Material(Math::RGBA{255, 255, 255}), height * tan(angle))
+        {
+        }
+
+        virtual bool
+        hits(const Ray &ray, Math::RGBA &hitColor, double &t) const override;
+
+        virtual Vector3D getNormal(const Point3D &point) const override;
+
+        virtual Material getMaterial() const override;
+
+        private:
+        Circle m_circle;
+    };
+
 } // namespace RayTracer

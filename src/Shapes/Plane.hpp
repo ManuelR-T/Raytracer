@@ -45,6 +45,12 @@ public:
         return m_normal;
     }
 
+    bool isPointInPlane(const Point3D &pt) const
+    {
+        auto d = m_normal.dot(pt - m_point);
+        return d == 0;
+    }
+
     private:
     Vector3D m_normal;
 };

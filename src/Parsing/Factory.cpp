@@ -46,20 +46,24 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCone(const libconfi
 {
     try {
         double r;
+        double height;
         const libconfig::Setting &position = item.lookup("position");
         const libconfig::Setting &axis = item.lookup("axis");
 
         if (!(item.lookupValue("r", r)))
             throw RayTracer::ParsingValueNotFound();
+        if (!(item.lookupValue("height", height)))
+            throw RayTracer::ParsingValueNotFound();
         Vector3D pos = ParseInformations::getCoords(position) + offset;
         Vector3D vec = ParseInformations::getAxis(axis);
         ParseInformations::getRotation(item, vec);
         ParseInformations::getTranslation(item, pos);
-        return (std::make_unique<RayTracer::Cones>(
+        return (std::make_unique<RayTracer::LimitedCones>(
             pos,
             ParseInformations::getMatColour(item),
             r,
-            vec));
+            vec,
+            height));
     } catch (std::exception &e) {
         return nullptr;
     }

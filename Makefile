@@ -8,6 +8,8 @@
 SRC =	 $(addsuffix .cpp, 				\
 			$(addprefix src/, 			\
 				$(addprefix Parsing/, 	\
+					Factory				\
+					ParseInformations	\
 					SceneParser)		\
 				Exception				\
 				Scene					\

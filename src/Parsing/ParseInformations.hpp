@@ -6,6 +6,7 @@
 */
 
 #pragma once
+
 #include "../Materials/Materials.hpp"
 #include "Matrix/Matrix.hpp"
 #include <libconfig.h++>

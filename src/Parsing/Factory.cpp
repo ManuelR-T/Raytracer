@@ -6,7 +6,7 @@
 */
 
 #include "Factory.hpp"
-#include "../Exception.hpp"
+#include "../Error/Exception.hpp"
 #include "Matrix/Matrix.hpp"
 #include "ParseInformations.hpp"
 
@@ -28,7 +28,7 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCube(const libconfi
         const libconfig::Setting &axis = item.lookup("axis");
 
         if (!(item.lookupValue("r", r)))
-            throw RayTracer::ParsingValueNotFound("cube r not found");
+            throw Error::ParsingValueNotFound("");
         Vector3D pos = ParseInformations::getCoords(position) + offset;
         Vector3D vec = ParseInformations::getAxis(axis);
         ParseInformations::getRotation(item, vec);
@@ -53,7 +53,9 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCone(const libconfi
         const libconfig::Setting &position = item.lookup("position");
         const libconfig::Setting &axis = item.lookup("axis");
         if (!(item.lookupValue("r", r)))
-            throw RayTracer::ParsingValueNotFound("cone r not found");
+            throw Error::ParsingValueNotFound("");
+        if (!(item.lookupValue("height", height)))
+            throw Error::ParsingValueNotFound("");
         Vector3D pos = ParseInformations::getCoords(position) + offset;
         Vector3D vec = ParseInformations::getAxis(axis);
         ParseInformations::getRotation(item, vec);
@@ -63,14 +65,12 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCone(const libconfi
             pos,
             ParseInformations::getMatColour(item),
             r,
-            vec,
-            1));
+            vec));
         return (std::make_unique<RayTracer::LimitedCones>(
             pos,
             ParseInformations::getMatColour(item),
             r,
-            vec,
-            height));
+            vec.normalized()));
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
         return nullptr;
@@ -105,7 +105,7 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createSphere(const libcon
     try {
         double r;
         if (!item.lookupValue("r", r))
-            throw RayTracer::ParsingValueNotFound("sphere r not found");
+            throw Error::ParsingValueNotFound("");
         Vector3D vec = ParseInformations::getCoords(item) + offset;
         ParseInformations::getRotation(item, vec);
         ParseInformations::getTranslation(item, vec);

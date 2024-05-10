@@ -9,7 +9,6 @@
 
 #include "Camera.hpp"
 #include "Lights.hpp"
-#include "Raytracer.hpp"
 #include "Shapes/IShape.hpp"
 
 #include <memory>

@@ -6,6 +6,7 @@
 */
 
 #include "SceneParser.hpp"
+#include "../Error/Exception.hpp"
 #include "../Camera.hpp"
 #include "../Exception.hpp"
 #include "../Lights.hpp"
@@ -27,13 +28,12 @@ RayTracer::SceneParser::SceneParser(RayTracer::Scene &scene, Vector3D &vec)
 void RayTracer::SceneParser::parseCamera(const libconfig::Setting &camera)
 {
     const libconfig::Setting &position = camera["position"];
-    std::array<double, 3> pos;
+    std::array<double, 3> pos{0, 0, 0};
 
-    if (!(position.lookupValue("x", pos[0]) &&
-          position.lookupValue("y", pos[1]) &&
-          position.lookupValue("z", pos[2]))) {
-        throw RayTracer::ParsingValueNotFound("camera position not found");
-    }
+    if(!(position.lookupValue("x", pos[0])
+        && position.lookupValue("y", pos[1])
+        && position.lookupValue("z", pos[2])))
+        throw Error::ParsingValueNotFound("camera position not found");
     Vector3D vec = Vector3D{pos[0], pos[1], pos[2]};
     RayTracer::Camera cam(vec);
     ParseInformations::getRotation(camera, cam.direction);
@@ -107,11 +107,12 @@ void RayTracer::SceneParser::getScene(const libconfig::Setting &scene)
         std::array<double, 3> pos;
 
         if (!scene.lookupValue("filename", file))
-            throw RayTracer::ParsingValueNotFound("filename not found");
+            throw Error::ParsingValueNotFound("filename not found");
         const libconfig::Setting &off = scene.lookup("offset");
-        if (!(off.lookupValue("x", pos[0]) && off.lookupValue("y", pos[1]) &&
-              off.lookupValue("z", pos[2])))
-            throw RayTracer::ParsingValueNotFound("offset not found");
+        if(!(off.lookupValue("x", pos[0])
+        && off.lookupValue("y", pos[1])
+        && off.lookupValue("z", pos[2])))
+            throw Error::ParsingValueNotFound("offset not found");
         m_offset = Vector3D{pos[0], pos[1], pos[2]};
         parseScene(file, true);
     } catch (std::exception &e) {
@@ -132,10 +133,10 @@ RayTracer::SceneParser::parseScene(const std::string &filename, bool imported)
             const libconfig::Setting &resolution = camera.lookup("resolution");
             if (!(resolution.lookupValue("width", m_scene.width) &&
                   resolution.lookupValue("height", m_scene.height))) {
-                throw RayTracer::ParsingValueNotFound("camera resolution not found");
+                throw Error::ParsingValueNotFound("camera resolution not found");
             }
             if (!camera.lookupValue("fieldOfView", m_scene.fov)) {
-                throw RayTracer::ParsingValueNotFound("camera field of view not found");
+                throw Error::ParsingValueNotFound("camera field of view not found");
             }
             parseCamera(camera);
         }

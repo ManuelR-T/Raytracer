@@ -10,7 +10,6 @@
 #include "ADecoratorShape.hpp"
 #include "AShape.hpp"
 #include "Circle.hpp"
-#include "Plane.hpp"
 
 #include "Matrix/Matrix.hpp"
 #include "RGBA.hpp"
@@ -22,12 +21,11 @@ namespace RayTracer {
         Cones(const Point3D &center,
               const Material &material,
               double angle,
-              const Vector3D &vect,
-              double height)
+              const Vector3D &vect)
             : AShape(center, material)
             , m_vect(vect)
             , m_angle(angle)
-            , m_height(height)
+            , m_height(vect.length())
         {
         }
 
@@ -49,12 +47,15 @@ namespace RayTracer {
         LimitedCones(const Point3D &center,
               const Material &material,
               double angle,
-              const Vector3D &vect,
-              double height)
+              const Vector3D &vect)
             :
               ADecoratorShape(std::make_unique<Cones>(
-                Cones(center, material, angle, vect, height)))
-            , m_circle(center + vect, vect, Material(Math::RGBA{255, 255, 255}), height * tan(angle))
+                Cones(center, material, angle, vect)))
+            , m_circle(
+                center + vect,
+                vect,
+                material,
+                vect.length() * tan(angle))
         {
         }
 

@@ -12,9 +12,11 @@
 #include <cmath>
 #include <cstddef>
 #include <functional>
+#include <format>
+#include <iostream>
 #include <ostream>
-#include <stdexcept>
-#include <type_traits>
+#include <string>
+#include "MatrixError.hpp"
 
 namespace Math {
 /// @brief Class used calculs and computations of Matrix of any dimension.
@@ -28,8 +30,11 @@ public:
 
     Matrix(std::initializer_list<double> val)
     {
-        if (!val.size() || val.size() != ROW * COL)
-            throw std::runtime_error("Incorrect number of argument.\n");
+        if (!val.size() || val.size() != ROW * COL) {
+            std::string errMsg = std::format("For {0}x{1} matrix, needs {2} arguments found {3}",
+                ROW, COL, ROW * COL, val.size());
+            throw Error::MatrixError(errMsg);
+        }
         std::copy(val.begin(), val.end(), m_data.begin());
     }
 
@@ -96,10 +101,13 @@ public:
     {
         Matrix<ROW, NEW_COL> newMat;
 
+        for (size_t n = 0; n < ROW * NEW_COL; n++) {
+            newMat[n] = 0.f;
+        }
         for (size_t i = 0; i < ROW; i++) {
             for (size_t j = 0; j < COL; j++) {
                 for (size_t k = 0; k < NEW_COL; k++) {
-                    newMat(i, k) +=
+                    newMat[i * NEW_COL + k] +=
                         this->operator()(i, j) * mat.operator()(j, k);
                 }
             }
@@ -217,7 +225,10 @@ public:
     inline double operator()(size_t i, size_t j) const
     {
         if (i >= ROW || j >= COL) {
-            throw std::runtime_error("Out of bound.\n");
+            std::string errMsg = std::format("({}, {}) is out of bounds for matrix ({}, {})",
+                i, j, ROW, COL);
+            std::cout << errMsg << std::endl;
+            throw Error::MatrixError(errMsg);
         }
         return this->m_data[i * COL + j];
     }
@@ -225,21 +236,25 @@ public:
     inline double &operator()(size_t i, size_t j)
     {
         if (i >= ROW || j >= COL) {
-            throw std::runtime_error("Out of bound.\n");
+            std::string errMsg = std::format("({}, {}) is out of bounds for matrix ({}, {})",
+                i, j, ROW, COL);
+            throw Error::MatrixError(errMsg);
         }
         return this->m_data[i * COL + j];
     }
 
     double &operator[](size_t index) {
         if (index >= ROW * COL) {
-            throw std::out_of_range("Index out of range.");
+            std::string errMsg = std::format("Index {0} is out of range for size {1}", index, ROW * COL);
+            throw Error::MatrixError(errMsg);
         }
         return m_data[index];
     }
 
     const double &operator[](size_t index) const {
         if (index >= ROW * COL) {
-            throw std::out_of_range("Index out of range.");
+            std::string errMsg = std::format("Index {0} is out of range for size {1}", index, ROW * COL);
+            throw Error::MatrixError(errMsg);
         }
         return m_data[index];
     }

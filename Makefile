@@ -19,6 +19,7 @@ SRC =	 $(addsuffix .cpp, 				\
 				Transformations/Transformation 	\
 				$(addprefix Shapes/, 			\
 					AShape						\
+					Cylinder 					\
 					Cube						\
 					Cones 						\
 				)	\

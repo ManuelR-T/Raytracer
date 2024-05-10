@@ -16,7 +16,8 @@ const std::unordered_map<std::string, std::function<std::unique_ptr<RayTracer::I
         {"spheres", [] (const libconfig::Setting &item, Vector3D &vec) {return createSphere(item, vec); }},
         {"planes", [] (const libconfig::Setting &item, Vector3D &vec) {return createPlane(item, vec); }},
         {"cubes", [] (const libconfig::Setting &item, Vector3D &vec) {return createCube(item, vec);}},
-        {"cones", [] (const libconfig::Setting &item, Vector3D &vec) {return createCone(item, vec);}}
+        {"cones", [] (const libconfig::Setting &item, Vector3D &vec) {return createCone(item, vec);}},
+        {"cylinders", [] (const libconfig::Setting &item, Vector3D &vec) {return createCylinder(item, vec);}}
 };
 
 std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCube(const libconfig::Setting &item, Vector3D &offset)
@@ -112,6 +113,31 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createSphere(const libcon
         return (std::make_unique<RayTracer::Sphere>(
             vec,
             r,
+            ParseInformations::getMatColour(item)));
+    } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return nullptr;
+    }
+}
+
+std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCylinder(const libconfig::Setting &item, Vector3D &offset)
+{
+    std::cout << "Creating Cylinder" << std::endl;
+    try {
+        double r;
+        const libconfig::Setting &position = item.lookup("position");
+        const libconfig::Setting &axis = item.lookup("axis");
+
+        if (!(item.lookupValue("r", r)))
+            throw Error::ParsingValueNotFound("");
+        Vector3D pos = ParseInformations::getCoords(position) + offset;
+        Vector3D vec = ParseInformations::getAxis(axis);
+        ParseInformations::getRotation(item, vec);
+        ParseInformations::getTranslation(item, pos);
+        return (std::make_unique<RayTracer::Cylinder>(
+            pos,
+            r,
+            vec,
             ParseInformations::getMatColour(item)));
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;

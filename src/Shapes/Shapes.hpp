@@ -16,3 +16,4 @@
 #include "Plane.hpp"
 #include "Cones.hpp"
 #include "Cube.hpp"
+#include "Cylinder.hpp"

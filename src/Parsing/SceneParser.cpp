@@ -61,6 +61,7 @@ void RayTracer::SceneParser::parsePrimitives(
     parseItem(primitives, "cones");
     parseItem(primitives, "planes");
     parseItem(primitives, "cubes");
+    parseItem(primitives, "cylinders");
 }
 
 void RayTracer::SceneParser::getPointLight(const libconfig::Setting &list)

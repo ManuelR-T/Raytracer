@@ -9,6 +9,7 @@
 
 #include "AShape.hpp"
 #include "Plane.hpp"
+#include <cmath>
 
 namespace RayTracer {
     class Circle : public AShape {
@@ -46,11 +47,18 @@ namespace RayTracer {
 
         bool isInCircle(const Point3D &pt) const
         {
+            auto normal = m_plan.getNormal(pt);
+
+            double isPoint =
+                std::pow(pt.x() - m_point.x(), 2) +
+                std::pow(pt.y() - m_point.y(), 2) +
+                std::pow(pt.z() - m_point.z(), 2);
+
             auto vect = m_point.getVectorTo(pt);
 
-            if (vect.dot(m_plan.getNormal(pt)) == 0)
+            if (isPoint <= m_radius && vect.dot(normal) == 0)
                 return true;
-            return true;
+            return false;
         }
 
     private:

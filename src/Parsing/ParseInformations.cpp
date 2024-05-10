@@ -73,9 +73,12 @@ void RayTracer::ParseInformations::getRotation(const libconfig::Setting &item, V
             && rotation.lookupValue("y", angles[1])
             && rotation.lookupValue("z", angles[2])))
             throw Error::ParsingValueNotFound("");
-        Math::Transformation3D::rotateX(pos, angles[0] * M_PI / 180);
-        Math::Transformation3D::rotateY(pos, angles[1] * M_PI / 180);
-        Math::Transformation3D::rotateZ(pos, angles[2] * M_PI / 180);
+        if (angles[0])
+            Math::Transformation3D::rotateX(pos, angles[0] * M_PI / 180);
+        if (angles[1])
+            Math::Transformation3D::rotateY(pos, angles[1] * M_PI / 180);
+        if (angles[2])
+            Math::Transformation3D::rotateZ(pos, angles[2] * M_PI / 180);
     } catch (std::exception &e) {
         return;
     }

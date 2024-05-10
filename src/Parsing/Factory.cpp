@@ -62,8 +62,7 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCone(const libconfi
             pos,
             ParseInformations::getMatColour(item),
             r,
-            vec,
-            height));
+            vec.normalized()));
     } catch (std::exception &e) {
         return nullptr;
     }

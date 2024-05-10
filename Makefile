@@ -5,21 +5,21 @@
 ## Makefile
 ##
 
-SRC =	 $(addsuffix .cpp, 				\
-			$(addprefix src/, 			\
-				$(addprefix Parsing/, 	\
-					Factory				\
-					ParseInformations	\
-					SceneParser)		\
-				Exception				\
-				Scene					\
-				Camera					\
-				main					\
+SRC =	 $(addsuffix .cpp, 						\
+			$(addprefix src/, 					\
+				$(addprefix Parsing/, 			\
+					Factory						\
+					ParseInformations			\
+					SceneParser)				\
+				Exception						\
+				Scene							\
+				Camera							\
+				main							\
 				Transformations/Transformation 	\
-				$(addprefix Shapes/, 	\
-					AShape				\
-					Cube				\
-					Cones 	\
+				$(addprefix Shapes/, 			\
+					AShape						\
+					Cube						\
+					Cones 						\
 				)	\
 			)	\
 		)

@@ -36,11 +36,16 @@ public:
     void addLight(std::unique_ptr<ILight> light);
     void setCamera(const RayTracer::Camera &cam);
 
-    void generateImage(bool isLight);
+    static void generateImage(bool isLight, Scene &scene, size_t nbCpus);
 
     void loopImage();
 
+    [[nodiscard]] sf::Image &getImage() { return m_image; }
+
     private:
+
+    static void generateLine(bool isLight, Scene &scene, int &y, std::mutex &mut);
+
     sf::Image m_image;
     sf::RenderWindow m_win;
 };

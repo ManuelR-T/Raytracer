@@ -70,10 +70,6 @@ public:
         A = std::clamp(A, static_cast<unsigned char>(0), static_cast<unsigned char>(255));
         return *this;
     }
-
-    void write_color(std::ostream &out) const {
-        out << static_cast<int>(R) << ' ' << static_cast<int>(G) << ' ' << static_cast<int>(B) << '\n';
-    }
 };
 } // namespace Math
 

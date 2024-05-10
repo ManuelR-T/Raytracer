@@ -137,7 +137,7 @@ static void applyLight(
     }
 }
 
-Math::RGBA Camera::traceRay(const Ray &ray, const Scene &scene) const
+Math::RGBA Camera::traceRay(const Ray &ray, const Scene &scene, bool isLight) const
 {
     double minDist;
     Math::RGBA closestColor;
@@ -147,7 +147,7 @@ Math::RGBA Camera::traceRay(const Ray &ray, const Scene &scene) const
     std::tie(minDist, closestColor, hitPoint, closestShapeIt) =
         getClosestShapeInfo(ray, scene);
 
-    if (closestShapeIt != scene.shapes.end()) {
+    if (isLight && closestShapeIt != scene.shapes.end()) {
         Math::RGBA finalColor = scene.ambientLight * closestColor;
 
         applyLight(scene,

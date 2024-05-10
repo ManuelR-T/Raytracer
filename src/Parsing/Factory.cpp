@@ -21,13 +21,14 @@ const std::unordered_map<std::string, std::function<std::unique_ptr<RayTracer::I
 
 std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCube(const libconfig::Setting &item, Vector3D &offset)
 {
+    std::cout << "Creating cube" << std::endl;
     try {
         double r;
         const libconfig::Setting &position = item.lookup("position");
         const libconfig::Setting &axis = item.lookup("axis");
 
         if (!(item.lookupValue("r", r)))
-            throw RayTracer::ParsingValueNotFound();
+            throw RayTracer::ParsingValueNotFound("cube r not found");
         Vector3D pos = ParseInformations::getCoords(position) + offset;
         Vector3D vec = ParseInformations::getAxis(axis);
         ParseInformations::getRotation(item, vec);
@@ -38,26 +39,32 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCube(const libconfi
             vec,
             ParseInformations::getMatColour(item)));
     } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
         return nullptr;
     }
 }
 
 std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCone(const libconfig::Setting &item, Vector3D &offset)
 {
+    std::cout << "Creating cone" << std::endl;
     try {
         double r;
         double height;
         const libconfig::Setting &position = item.lookup("position");
         const libconfig::Setting &axis = item.lookup("axis");
-
         if (!(item.lookupValue("r", r)))
-            throw RayTracer::ParsingValueNotFound();
-        if (!(item.lookupValue("height", height)))
-            throw RayTracer::ParsingValueNotFound();
+            throw RayTracer::ParsingValueNotFound("cone r not found");
         Vector3D pos = ParseInformations::getCoords(position) + offset;
         Vector3D vec = ParseInformations::getAxis(axis);
         ParseInformations::getRotation(item, vec);
         ParseInformations::getTranslation(item, pos);
+        if (!(item.lookupValue("height", height)))
+            return (std::make_unique<RayTracer::Cones>(
+            pos,
+            ParseInformations::getMatColour(item),
+            r,
+            vec,
+            1));
         return (std::make_unique<RayTracer::LimitedCones>(
             pos,
             ParseInformations::getMatColour(item),
@@ -65,12 +72,14 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCone(const libconfi
             vec,
             height));
     } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
         return nullptr;
     }
 }
 
 std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createPlane(const libconfig::Setting &item, Vector3D &offset)
 {
+    std::cout << "Creating plane" << std::endl;
     try {
         const libconfig::Setting &position = item.lookup("position");
         const libconfig::Setting &axis = item.lookup("axis");
@@ -85,16 +94,18 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createPlane(const libconf
             vec,
             ParseInformations::getMatColour(item)));
     } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
         return nullptr;
     }
 }
 
 std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createSphere(const libconfig::Setting &item, Vector3D &offset)
 {
+    std::cout << "Creating sphere" << std::endl;
     try {
         double r;
         if (!item.lookupValue("r", r))
-            throw RayTracer::ParsingValueNotFound();
+            throw RayTracer::ParsingValueNotFound("sphere r not found");
         Vector3D vec = ParseInformations::getCoords(item) + offset;
         ParseInformations::getRotation(item, vec);
         ParseInformations::getTranslation(item, vec);
@@ -103,6 +114,7 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createSphere(const libcon
             r,
             ParseInformations::getMatColour(item)));
     } catch (std::exception &e) {
+        std::cerr << e.what() << std::endl;
         return nullptr;
     }
 }

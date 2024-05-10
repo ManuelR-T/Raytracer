@@ -6,3 +6,4 @@ raytracer
 *.ppm
 .clang-format
 *.raytracer
+.vscode/

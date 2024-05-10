@@ -24,8 +24,11 @@ int main(int ac, char **av)
         RayTracer::SceneParser parser(scene, vec);
         std::ofstream file("image.ppm");
 
+        std::cout << "Parsing scene" << std::endl;
         parser.parseScene(av[1], false);
+        std::cout << "Generating image" << std::endl;
         scene.generateImage(file);
+        std::cout << "Image generated at ./image.ppm" << std::endl;
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
         return FAILURE;

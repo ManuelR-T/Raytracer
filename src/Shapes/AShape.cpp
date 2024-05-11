@@ -14,6 +14,20 @@ RayTracer::AShape::~AShape()
 {
 }
 
+std::tuple<double, double> RayTracer::AShape::getUV(const Point3D &hitPoint, const Vector3D &normal) const
+{
+    Vector3D tangentU = normal.cross(Vector3D({1, 0, 0})).normalized();
+    if (tangentU.length() < 1e-6) {
+        tangentU = normal.cross(Vector3D({0, 1, 0})).normalized();
+    }
+    Vector3D tangentV = normal.cross(tangentU).normalized();
+
+    double u = hitPoint.dot(tangentU);
+    double v = hitPoint.dot(tangentV);
+
+    return std::make_tuple(u, v);
+}
+
 bool RayTracer::AShape::discriminant(double a,
                                      double b,
                                      double c,

@@ -10,12 +10,13 @@
 #include "../Materials/Materials.hpp"
 #include "Matrix/Matrix.hpp"
 #include <libconfig.h++>
+#include <memory>
 
 namespace RayTracer {
     class ParseInformations {
         public:
             static Math::RGBA getColour(const libconfig::Setting &list);
-            static RayTracer::Material getMatColour(const libconfig::Setting &list);
+            static std::unique_ptr<RayTracer::Material> getMatColour(const libconfig::Setting &list);
             static Point3D getAxis(const libconfig::Setting &list);
             static Vector3D getCoords(const libconfig::Setting &list);
             static void getRotation(const libconfig::Setting &item, Vector3D &pos);

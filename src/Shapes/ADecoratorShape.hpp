@@ -30,7 +30,7 @@ namespace RayTracer
             return wrappee->getNormal(point);
         }
 
-        virtual Material getMaterial() const override
+        std::unique_ptr<RayTracer::Material> &getMaterial() override
         {
             return wrappee->getMaterial();
         }

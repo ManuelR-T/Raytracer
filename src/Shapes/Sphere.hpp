@@ -10,13 +10,15 @@
 #include "../Materials/Material.hpp"
 #include "AShape.hpp"
 #include "Matrix/Matrix.hpp"
+#include <cmath>
 
 namespace RayTracer {
 class Sphere : public AShape {
 public:
-
-    Sphere(const Point3D &center, double radius, const Material &material):
-          AShape(center, material)
+    Sphere(const Point3D &center,
+           double radius,
+           std::unique_ptr<Material> material)
+        : AShape(center, material)
         , m_radius(radius)
     {
     }
@@ -30,7 +32,11 @@ public:
         double c = oc.dot(oc) - m_radius * m_radius;
 
         if (discriminant(a, b, c, t)) {
-            hitColor = m_material.color;
+            Point3D hitPoint = ray.m_origin + ray.m_direction * t;
+            Vector3D normal = getNormal(hitPoint);
+            double u = 0.5 + atan2(normal.z(), normal.x()) / (2 * M_PI);
+            double v = 0.5 - asin(normal.y()) / M_PI;
+            hitColor = m_material->getColor(u, v);
             return true;
         }
         return false;

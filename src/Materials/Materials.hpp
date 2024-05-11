@@ -9,3 +9,4 @@
 
 #include "Flat.hpp"
 #include "Glassy.hpp"
+#include "ChessBoard.hpp"

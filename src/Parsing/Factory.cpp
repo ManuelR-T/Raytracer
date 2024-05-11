@@ -40,7 +40,7 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCube(const libconfi
             ParseInformations::getMatColour(item)));
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
-        return nullptr;
+        throw Error::ParsingValueNotFound("Cube Error");
     }
 }
 
@@ -83,41 +83,39 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createPlane(const libconf
     try {
         const libconfig::Setting &position = item.lookup("position");
         const libconfig::Setting &axis = item.lookup("axis");
-        Vector3D vec;
-
-        vec = ParseInformations::getAxis(axis);
+        Vector3D vec = ParseInformations::getAxis(axis);
         Vector3D pos = ParseInformations::getCoords(position) + offset;
         ParseInformations::getRotation(item, vec);
         ParseInformations::getTranslation(item, pos);
-        return (std::make_unique<RayTracer::Plane>(
-            ParseInformations::getCoords(position),
+
+        auto material = ParseInformations::getMatColour(item);
+        return std::make_unique<RayTracer::Plane>(
+            pos,
             vec,
-            ParseInformations::getMatColour(item)));
+            material);
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
         return nullptr;
     }
 }
 
-std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createSphere(const libconfig::Setting &item, Vector3D &offset)
-{
+
+std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createSphere(const libconfig::Setting &item, Vector3D &offset) {
     std::cout << "Creating sphere" << std::endl;
     try {
         double r;
         if (!item.lookupValue("r", r))
             throw Error::ParsingValueNotFound("");
-        Vector3D vec = ParseInformations::getCoords(item) + offset;
-        ParseInformations::getRotation(item, vec);
-        ParseInformations::getTranslation(item, vec);
-        return (std::make_unique<RayTracer::Sphere>(
-            vec,
-            r,
-            ParseInformations::getMatColour(item)));
+        Vector3D pos = ParseInformations::getCoords(item) + offset;
+        ParseInformations::getRotation(item, pos);
+        ParseInformations::getTranslation(item, pos);
+        return std::make_unique<RayTracer::Sphere>(pos, r, ParseInformations::getMatColour(item));
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
         return nullptr;
     }
 }
+
 
 std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createShape(const libconfig::Setting &item, const std::string &type, Vector3D &vec)
 {

@@ -94,33 +94,15 @@ void Scene::generateImage(bool isLight, Scene &scene, size_t nbCpus)
     for (auto &thread: v_threads) {
         thread.join();
     }
-
-    /* -- To compare without Multithread uncomment this -- */
-    // auto &m_image = scene.getImage();
-    // for (int y = scene.height - 1; y >= 0; --y) {
-    //     for (int x = scene.width - 1; x >= 0; --x) {
-    //         double u = double(x) / (scene.width - 1);
-    //         double v = double(y) / (scene.height - 1);
-    //         Ray r = scene.camera->ray(u, v, scene.fov, double(scene.width) / scene.height);
-    //         Math::RGBA color = scene.camera->traceRay(r, scene, isLight);
-    //         m_image.setPixel(scene.width - x - 1, scene.height - y - 1, {color.R, color.G, color.B, color.A});
-    //     }
-    // }
 }
 
 void Scene::loopImage()
 {
     m_image.create(width, height);
 
-
-    /* -- To test without Multithreading comment this -- */
     size_t nbCpu = std::thread::hardware_concurrency();
     std::thread th(generateImage, true, std::ref(*this), nbCpu - 1);
 
-    /* -- To test without Multithreading uncomment this -- */
-    // generateImage(true, *this, 0);
-
-    /* -- If you wish to try the window mode uncomment this -- */
     m_win.create(sf::VideoMode(width, height), "RayTracer");
     while (m_win.isOpen()) {
         m_win.clear(sf::Color{0, 0, 0});

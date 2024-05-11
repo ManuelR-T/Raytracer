@@ -38,7 +38,7 @@ public:
 
     static void generateImage(bool isLight, Scene &scene, size_t nbCpus);
 
-    void loopImage();
+    void loopImage(const std::string &format);
 
     [[nodiscard]] sf::Image &getImage() { return m_image; }
 

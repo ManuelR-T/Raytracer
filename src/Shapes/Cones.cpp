@@ -110,6 +110,9 @@ bool RayTracer::LimitedCones::hits(const Ray &ray, Math::RGBA &hitColor, double 
 
 Vector3D RayTracer::LimitedCones::getNormal(const Point3D &point) const
 {
+    if (m_circle.isInCircle(point)) {
+        return m_circle.getNormal(point);
+    }
     return wrappee->getNormal(point);
 }
 

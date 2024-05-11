@@ -22,6 +22,8 @@ SRC =	 $(addsuffix .cpp, 				\
 					Cube						\
 					Cones 						\
 				)	\
+				$(addprefix OptionHandler/, 	\
+					OptionHandler) 				\
 			)	\
 		)
 
@@ -33,10 +35,12 @@ CXX = g++
 CFLAGS = -W -Wall -Wextra -lconfig++
 CPPFLAGS = -iquote./include -iquote./libs -std=c++20
 
+LDLIBS	=	-lsfml-graphics -lsfml-window -lsfml-system
+
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CXX) -o $(NAME) $(OBJ) $(CFLAGS) $(CPPFLAGS)
+	$(CXX) -o $(NAME) $(OBJ) $(CFLAGS) $(LDLIBS)
 
 %.o: %.cpp
 	$(CXX) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)

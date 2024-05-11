@@ -26,7 +26,7 @@ public:
            const Vector3D &up = Vector3D{0, 1, 0});
 
     Ray ray(double u, double v, double fov = 90.0, double aspectRatio = 8.0/6) const;
-    Math::RGBA traceRay(const Ray &ray, const Scene &scene) const;
+    Math::RGBA traceRay(const Ray &ray, const Scene &scene, bool isLight) const;
 
 private:
     Math::RGBA defaultColor{0, 0, 0};

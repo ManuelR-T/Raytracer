@@ -21,7 +21,6 @@ const std::unordered_map<std::string, std::function<std::unique_ptr<RayTracer::I
 
 std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCube(const libconfig::Setting &item, Vector3D &offset)
 {
-    std::cout << "Creating cube" << std::endl;
     try {
         double r;
         const libconfig::Setting &position = item.lookup("position");
@@ -46,7 +45,6 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCube(const libconfi
 
 std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCone(const libconfig::Setting &item, Vector3D &offset)
 {
-    std::cout << "Creating cone" << std::endl;
     try {
         double r;
         double height;
@@ -79,7 +77,6 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createCone(const libconfi
 
 std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createPlane(const libconfig::Setting &item, Vector3D &offset)
 {
-    std::cout << "Creating plane" << std::endl;
     try {
         const libconfig::Setting &position = item.lookup("position");
         const libconfig::Setting &axis = item.lookup("axis");
@@ -100,7 +97,8 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createPlane(const libconf
 }
 
 
-std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createSphere(const libconfig::Setting &item, Vector3D &offset) {
+std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createSphere(const libconfig::Setting &item, Vector3D &offset)
+{
     std::cout << "Creating sphere" << std::endl;
     try {
         double r;

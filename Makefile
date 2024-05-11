@@ -22,6 +22,8 @@ SRC =	 $(addsuffix .cpp, 				\
 					Cube						\
 					Cones 						\
 				)	\
+				$(addprefix OptionHandler/, 	\
+					OptionHandler) 				\
 			)	\
 		)
 

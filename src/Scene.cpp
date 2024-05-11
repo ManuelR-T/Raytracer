@@ -96,7 +96,7 @@ void Scene::generateImage(bool isLight, Scene &scene, size_t nbCpus)
     }
 }
 
-void Scene::loopImage()
+void Scene::loopImage(const std::string &format)
 {
     m_image.create(width, height);
 
@@ -120,7 +120,8 @@ void Scene::loopImage()
         m_win.display();
     }
     th.join();
-    m_image.saveToFile("image.png");
+    if (format.length())
+        m_image.saveToFile("image." + format);
 }
 
 } // namespace RayTracer

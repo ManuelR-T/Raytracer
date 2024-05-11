@@ -53,7 +53,6 @@ public:
               std::make_unique<Cones>(center, std::move(material), angle, vect)),
           m_circle(center + vect, vect, std::make_unique<Flat>(Math::RGBA()) , vect.length() * tan(angle))
     {
-        std::cout << "LimitedCones" << std::endl;
     }
 
 

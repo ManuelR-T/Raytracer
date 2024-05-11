@@ -99,7 +99,6 @@ std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createPlane(const libconf
 
 std::unique_ptr<RayTracer::IShape> RayTracer::Factory::createSphere(const libconfig::Setting &item, Vector3D &offset)
 {
-    std::cout << "Creating sphere" << std::endl;
     try {
         double r;
         if (!item.lookupValue("r", r))

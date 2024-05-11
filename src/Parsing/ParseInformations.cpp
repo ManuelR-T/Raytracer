@@ -41,21 +41,18 @@ std::unique_ptr<RayTracer::Material> RayTracer::ParseInformations::getMatColour(
         return std::make_unique<RayTracer::Glassy>(Math::RGBA(color[0], color[1], color[2]));
     if (str == "Flat")
         return std::make_unique<RayTracer::Flat>(Math::RGBA(color[0], color[1], color[2]));
-    if (str == "ChessBoard") {
-        const libconfig::Setting &rgb2 = list.lookup("color2");
-        if (!(rgb2.lookupValue("r", color2[0])
-            && rgb2.lookupValue("g", color2[1])
-            && rgb2.lookupValue("b", color2[2])))
-            throw Error::ParsingValueNotFound("color2 not found");
-        double scale = 1.0;
-        if (!list.lookupValue("scale", scale))
-            throw Error::ParsingValueNotFound("scale not found");
-        std::cout << "Creating chessboard" << std::endl;
-        std::cout << "Color1: " << color[0] << " " << color[1] << " " << color[2] << std::endl;
-        std::cout << "Color2: " << color2[0] << " " << color2[1] << " " << color2[2] << std::endl;
-        std::cout << "Scale: " << scale << std::endl;
+    const libconfig::Setting &rgb2 = list.lookup("color2");
+    if (!(rgb2.lookupValue("r", color2[0])
+        && rgb2.lookupValue("g", color2[1])
+        && rgb2.lookupValue("b", color2[2])))
+        throw Error::ParsingValueNotFound("color2 not found");
+    double scale = 1.0;
+    if (!list.lookupValue("scale", scale))
+        throw Error::ParsingValueNotFound("scale not found");
+    if (str == "ChessBoard")
         return std::make_unique<RayTracer::ChessBoard>(Math::RGBA(color[0], color[1], color[2]), Math::RGBA(color2[0], color2[1], color2[2]), scale);
-    }
+    if (str == "Perlin")
+        return std::make_unique<RayTracer::PerlinNoiseMaterial>(Math::RGBA(color[0], color[1], color[2]), Math::RGBA(color2[0], color2[1], color2[2]), scale);
     throw Error::ParsingValueNotFound("material not found");
 }
 

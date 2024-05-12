@@ -85,12 +85,13 @@ void Scene::generateImage(bool isLight, Scene &scene, size_t nbCpus)
     std::vector<std::thread> v_threads;
     std::mutex mut;
 
+    mut.lock();
     for (size_t i = 0; i < nbCpus; i++) {
         v_threads.push_back(std::thread(
             generateLine, isLight, std::ref(scene), std::ref(y), std::ref(mut))
         );
-        y--;
     }
+    mut.unlock();
     for (auto &thread: v_threads) {
         thread.join();
     }

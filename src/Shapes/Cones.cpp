@@ -9,6 +9,7 @@
 #include "Matrix/Matrix.hpp"
 #include <cmath>
 #include <limits>
+#include <memory>
 
 bool RayTracer::Cones::hits(const Ray &ray,
                             Math::RGBA &hitColor,
@@ -24,9 +25,21 @@ bool RayTracer::Cones::hits(const Ray &ray,
     double c = ((ptToRay.dot(m_vect)) * (ptToRay.dot(m_vect))) -
                ptToRay.dot(ptToRay) * cosPow;
 
-    auto roots = discriminant(a, b, c);
+    std::tuple<double, double> roots = discriminant(a, b, c);
         if (isRootValid(roots)) {
-        hitColor = m_material.color;
+
+        Point3D hitPoint = ray.m_origin + ray.m_direction * std::get<0>(roots);
+        Vector3D normal = getNormal(hitPoint);
+        Vector3D tangentU = normal.cross(Vector3D({1, 0, 0})).normalized();
+        if (tangentU.length() < 1e-6) {
+            tangentU = normal.cross(Vector3D({0, 1, 0})).normalized();
+        }
+        Vector3D tangentV = normal.cross(tangentU).normalized();
+
+        double u = hitPoint.dot(tangentU);
+        double v = hitPoint.dot(tangentV);
+
+        hitColor = m_material->getColor(u,v);
         double t1, t2;
 
         std::tie(t1, t2) = roots;
@@ -80,10 +93,10 @@ bool RayTracer::LimitedCones::hits(const Ray &ray, Math::RGBA &hitColor, double 
     Math::RGBA circleColor;
     double tCircle;
 
-    auto isCircle = m_circle.hits(ray, circleColor, tCircle);
+    bool isCircle = m_circle.hits(ray, circleColor, tCircle);
 
-    auto ptToCone = ray.m_origin + tCone * ray.m_direction;
-    auto ptToCircle = ray.m_origin + tCircle * ray.m_direction;
+    Point3D ptToCone = ray.m_origin + tCone * ray.m_direction;
+    Point3D ptToCircle = ray.m_origin + tCircle * ray.m_direction;
 
     if (isCircle && ptToCircle.length() < ptToCone.length()) {
         t = tCircle;
@@ -103,7 +116,4 @@ Vector3D RayTracer::LimitedCones::getNormal(const Point3D &point) const
     return wrappee->getNormal(point);
 }
 
-RayTracer::Material RayTracer::LimitedCones::getMaterial() const
-{
-    return (*wrappee).getMaterial();
-}
+

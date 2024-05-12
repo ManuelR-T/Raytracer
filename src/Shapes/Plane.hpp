@@ -10,6 +10,7 @@
 #include "../Materials/Material.hpp"
 #include "AShape.hpp"
 #include "Matrix/Matrix.hpp"
+#include <cmath>
 
 namespace RayTracer {
 class Plane : public AShape {
@@ -17,7 +18,7 @@ public:
 
     Plane(const Point3D &point,
           const Vector3D &normal,
-          const Material &material)
+          std::unique_ptr<Material> &material)
         :
           AShape(point, material)
         , m_normal(normal.normalized())
@@ -36,7 +37,10 @@ public:
         if (t < 0) {
             return false;
         }
-        hitColor = m_material.color;
+        Point3D hitPoint = ray.m_origin + ray.m_direction * t;
+        std::tuple<double, double> uv = getUV(hitPoint, m_normal);
+
+        hitColor = m_material->getColor(std::get<0>(uv), std::get<1>(uv));
         return true;
     }
 

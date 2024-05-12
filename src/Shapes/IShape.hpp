@@ -11,6 +11,7 @@
 #include "../Raytracer.hpp"
 #include "Matrix/Matrix.hpp"
 #include "RGBA.hpp"
+#include <memory>
 
 namespace RayTracer {
 
@@ -22,7 +23,7 @@ public:
     hits(const Ray &ray, Math::RGBA &hitColor, double &t) const = 0;
 
     virtual Vector3D getNormal(const Point3D &point) const = 0;
-    virtual Material getMaterial() const = 0;
+    virtual std::unique_ptr<Material> &getMaterial() = 0;
 };
 
 } // namespace RayTracer

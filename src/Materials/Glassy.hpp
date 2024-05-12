@@ -13,8 +13,11 @@ namespace RayTracer {
 class Glassy : public Material {
 public:
     Glassy(const Math::RGBA &color)
-        : Material(color, 1.0, 5)
+        : Material(1.0, 5), color(color)
     {
     }
+    Math::RGBA getColor(const double, const double) override { return color; }
+    private:
+    Math::RGBA color;
 };
 } // namespace RayTracer

@@ -20,20 +20,25 @@ bool Cube::hits(const Ray &ray, Math::RGBA &hitColor, double &t) const
         m_point - Point3D({m_size / 2, m_size / 2, m_size / 2}),
         m_point + Point3D({m_size / 2, m_size / 2, m_size / 2})};
 
-    for (int i = 0; i < 3; ++i) { // Check for x, y, z axes
+    for (int i = 0; i < 3; ++i) {
         double invD = 1.0 / ray.m_direction[i];
         double t0 = (bounds[0][i] - ray.m_origin[i]) * invD;
         double t1 = (bounds[1][i] - ray.m_origin[i]) * invD;
         if (invD < 0.0)
             std::swap(t0, t1);
-        tMin = t0 > tMin ? t0 : tMin;
-        tMax = t1 < tMax ? t1 : tMax;
+        if (t0 > tMin)
+            tMin = t0;
+        tMax = std::min(tMax, t1);
         if (tMax <= tMin)
             return false;
     }
 
     t = tMin;
-    hitColor = m_material.color;
+    Point3D hitPoint = ray.m_origin + ray.m_direction * t;
+    Vector3D normal = getNormal(hitPoint);
+    std::tuple<double, double> uv = getUV(hitPoint, normal);
+
+    hitColor = m_material->getColor(std::get<0>(uv), std::get<1>(uv));
     return true;
 }
 

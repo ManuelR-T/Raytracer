@@ -57,10 +57,9 @@ void RayTracer::SceneParser::parseItem(const libconfig::Setting &primitives,
 void RayTracer::SceneParser::parsePrimitives(
     const libconfig::Setting &primitives)
 {
-    parseItem(primitives, "spheres");
-    parseItem(primitives, "cones");
-    parseItem(primitives, "planes");
-    parseItem(primitives, "cubes");
+    for (const auto &it : Factory::m_FACTORY) {
+        parseItem(primitives, it.first);
+    }
 }
 
 void RayTracer::SceneParser::getPointLight(const libconfig::Setting &list)

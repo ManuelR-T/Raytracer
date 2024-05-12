@@ -21,6 +21,7 @@ SRC =	 $(addsuffix .cpp, 				\
 					AShape						\
 					Cube						\
 					Cones 						\
+					Cylinder					\
 				)	\
 				$(addprefix OptionHandler/, 	\
 					OptionHandler) 				\

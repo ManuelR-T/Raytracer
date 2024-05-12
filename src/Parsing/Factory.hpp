@@ -29,5 +29,6 @@ namespace RayTracer {
             static std::unique_ptr<RayTracer::IShape> createSphere(const libconfig::Setting &item, Vector3D &);
             static std::unique_ptr<RayTracer::IShape> createPlane(const libconfig::Setting &item, Vector3D &);
             static std::unique_ptr<RayTracer::IShape> createCone(const libconfig::Setting &item, Vector3D &);
+            static std::unique_ptr<RayTracer::IShape> createCylinder(const libconfig::Setting &item, Vector3D &);
     };
 }

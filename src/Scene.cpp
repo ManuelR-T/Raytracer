@@ -5,7 +5,7 @@
 ** Scene
 */
 
-#include "Camera.hpp"
+#include "Scene.hpp"
 #include "Lights.hpp"
 #include "Shapes/IShape.hpp"
 

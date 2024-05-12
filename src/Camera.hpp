@@ -10,7 +10,8 @@
 #include "Matrix/Matrix.hpp"
 #include "RGBA.hpp"
 #include "Raytracer.hpp"
-#include "Scene.hpp"
+#include <memory>
+#include "Shapes/IShape.hpp"
 
 namespace RayTracer {
 
@@ -29,6 +30,36 @@ public:
     Math::RGBA traceRay(const Ray &ray, const Scene &scene, bool isLight) const;
 
 private:
+
+    static void applyLight(
+        const Scene &scene,
+        const std::vector<std::unique_ptr<IShape>>::const_iterator &closestShapeIt,
+        const Math::RGBA &closestColor,
+        const Point3D &hitPoint,
+        Math::RGBA &finalColor,
+        const Vector3D &viewDir
+    );
+
+    static std::tuple<double, Math::RGBA, Point3D, std::vector<std::unique_ptr<IShape>>::const_iterator>
+    getClosestShapeInfo(const Ray &ray, const Scene &scene);
+
+    static void applyDiffuseLight(
+        Math::RGBA &loopColor,
+        const Math::RGBA &closestColor,
+        const Math::RGBA &lightColor,
+        double dot
+    );
+
+    static void applySpecularLight(
+        Math::RGBA &loopColor,
+        const Math::RGBA &lightColor,
+        double dot,
+        const Vector3D &viewDir,
+        const Vector3D &lightDir,
+        const Vector3D &normal,
+        const std::vector<std::unique_ptr<IShape>>::const_iterator &closestShapeIt
+    );
+
     Math::RGBA defaultColor{0, 0, 0};
 };
 } // namespace RayTracer

@@ -39,17 +39,19 @@ Ray Camera::ray(double u, double v, double fov, double aspectRatio) const
     return Ray(origin, rayDirection);
 }
 
-static void applyDiffuseLight(Math::RGBA &loopColor,
-                              const Math::RGBA &closestColor,
-                              const Math::RGBA &lightColor,
-                              double dot)
+void RayTracer::Camera::applyDiffuseLight(
+    Math::RGBA &loopColor,
+    const Math::RGBA &closestColor,
+    const Math::RGBA &lightColor,
+    double dot
+)
 {
     loopColor.R = closestColor.R * lightColor.R * dot / 255.0;
     loopColor.G = closestColor.G * lightColor.G * dot / 255.0;
     loopColor.B = closestColor.B * lightColor.B * dot / 255.0;
 }
 
-static void applySpecularLight(
+void RayTracer::Camera::applySpecularLight(
     Math::RGBA &loopColor,
     const Math::RGBA &lightColor,
     double dot,
@@ -66,11 +68,11 @@ static void applySpecularLight(
     loopColor += lightColor * spec;
 }
 
-static std::tuple<double,
+std::tuple<double,
                   Math::RGBA,
                   Point3D,
                   std::vector<std::unique_ptr<IShape>>::const_iterator>
-getClosestShapeInfo(const Ray &ray, const Scene &scene)
+RayTracer::Camera::getClosestShapeInfo(const Ray &ray, const Scene &scene)
 {
     double minDist = std::numeric_limits<double>::infinity();
     Math::RGBA closestColor = Math::RGBA{0, 0, 0, 0};
@@ -90,7 +92,7 @@ getClosestShapeInfo(const Ray &ray, const Scene &scene)
     return std::make_tuple(minDist, closestColor, hitPoint, closestShapeIt);
 }
 
-static void applyLight(
+void RayTracer::Camera::applyLight(
     const Scene &scene,
     const std::vector<std::unique_ptr<IShape>>::const_iterator &closestShapeIt,
     const Math::RGBA &closestColor,

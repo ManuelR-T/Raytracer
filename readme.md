@@ -1,5 +1,7 @@
 # Raytracer Project
 
+[![Pipeline](https://github.com/ManuelR-T/Raytracer/actions/workflows/pipeline.yml/badge.svg)](https://github.com/ManuelR-T/Raytracer/actions/workflows/pipeline.yml)
+
 ## Overview
 
 This project is a Raytracer, a program designed to render 3D scenes using ray tracing techniques. The project is implemented in C++ and uses SFML (Simple and Fast Multimedia Library) for graphical output.

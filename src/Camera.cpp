@@ -107,7 +107,7 @@ void RayTracer::Camera::applyLight(
         double epsilon = 1e-6; // Small offset value to prevent shadow acne
         Point3D offsetHitPoint = hitPoint - lightDir * epsilon;
         Ray lightRay(offsetHitPoint, lightDir  * -1);
-        double lightDistance = light->getLenght(hitPoint) - lightDir.length();
+        double lightDistance = light->getLength(hitPoint) - lightDir.length();
         bool inShadow = false;
 
         for (const auto &shape : scene.shapes) {

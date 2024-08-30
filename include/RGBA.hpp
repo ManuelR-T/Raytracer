@@ -10,11 +10,6 @@
 #include <algorithm>
 #include <iostream>
 
-#pragma once
-
-#include <algorithm>
-#include <iostream>
-
 namespace Math {
 class RGBA {
 public:
@@ -72,4 +67,3 @@ public:
     }
 };
 } // namespace Math
-

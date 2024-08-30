@@ -19,7 +19,7 @@ public:
 
     virtual Math::RGBA getIntensityAt(const Point3D& point) const = 0;
     virtual Vector3D getDirectionToPoint(const Point3D& point) const = 0;
-    virtual double getLenght(const Point3D& point) const = 0;
+    virtual double getLength(const Point3D& point) const = 0;
 };
 
 class DirectionalLight : public ILight {
@@ -38,7 +38,7 @@ public:
         return direction * -1;
     }
 
-    virtual double getLenght(const Point3D &) const override {
+    virtual double getLength(const Point3D &) const override {
         return std::numeric_limits<double>::infinity();
     }
 };
@@ -62,10 +62,9 @@ public:
         return pos.getVectorTo(point).normalized();
     }
 
-    virtual double getLenght(const Point3D& point) const override {
+    virtual double getLength(const Point3D& point) const override {
         return pos.getVectorTo(point).length();
     }
 };
 
 } // namespace RayTracer
-
